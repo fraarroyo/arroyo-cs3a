@@ -26,7 +26,7 @@ if st.button("Submit"):
     if not (1 < len(plaintext) >= len(key) >= 1):
         st.write("Plaintext length should be equal or greater than the length of key.")
     elif not plaintext != key:
-        st.write("Plaintext should not be equal to the key")
+        st.write("Plaintext should not be equal to the key.")
     else:
         ciphertext = xor_encrypt(plaintext, key)
         st.write("Ciphertext:", ciphertext.decode())
