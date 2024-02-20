@@ -19,28 +19,17 @@ def xor_decrypt(ciphertext, key):
     """Decrypts ciphertext using XOR cipher with the given key."""
     return xor_encrypt(ciphertext, key)
 
+plaintext = bytes(st.text_area("Plain Text:").encode())
+key = bytes(st.text_input("Key:").encode())
 
-# Example usage:
-plaintext = bytes(input().encode())
-key = bytes(input().encode())
-
-
-
-if not (1 < len(plaintext) >= len(key) >= 1):
-    st.write("Plaintext length should be equal or greater than the length of key")
-elif not plaintext != key:
-    st.write("Plaintext should not be equal to the key")
-else:
-    ciphertext = xor_encrypt(plaintext, key)
-    st.write("Ciphertext:", ciphertext.decode())
-    
-    decrypted = xor_decrypt(ciphertext, key)
-    st.write("Decrypted:",decrypted.decode())
-    
-
-plaintext = st.text_area("Plain Text:")
-
-key = st.text_input("Key:")
-
-if st.button("submit"):
-    st.write(plaintext)
+if st.button("Submit"):
+    if not (1 < len(plaintext) >= len(key) >= 1):
+        st.write("Plaintext length should be equal or greater than the length of key")
+    elif not plaintext != key:
+        st.write("Plaintext should not be equal to the key")
+    else:
+        ciphertext = xor_encrypt(plaintext, key)
+        st.write("Ciphertext:", ciphertext.decode())
+        
+        decrypted = xor_decrypt(ciphertext, key)
+        st.write("Decrypted:",decrypted.decode())
