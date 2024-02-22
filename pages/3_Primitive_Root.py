@@ -1,7 +1,5 @@
 import streamlit as st
 
-st.header("XOR Cipher")
-
 def prime(n):
     if n < 2:
         return False
@@ -16,18 +14,6 @@ def modulus(base, exponent, mod):
         result = (result * base) % mod
     return result
     
-def primitive_input(prompt):
-    while True:
-        user_input = input(prompt)
-        try:
-            n = int(user_input)
-            if n > 1:
-                return n
-            else:
-                st.write("Please enter a number greater than 1.")
-        except ValueError:
-            st.write("Please Enter a valid integer")
-        
 def primitive_roots(p):       
     primitive_root = []
     for g in range(1, p):
@@ -70,7 +56,13 @@ def print_primitive(p, prim_num):
             st.write(f"{prim_num} is NOT primitive root of {p} - List of Primitive roots: {primitive_root}")
     else:
         st.write(f"{prim_num} is NOT primitive root of {p} - List of Primitive roots: {primitive_root}")
-    
-p = primitive_input("")
-prim_num = primitive_input("")
-print_primitive(p, prim_num)
+
+def main():
+    st.title("Primitive Roots Calculator")
+    p = st.number_input("Enter a prime number (p)", value=2, step=1)
+    prim_num = st.number_input("Enter a primitive number (prim_num)", value=1, step=1)
+    if st.button("Calculate"):
+        print_primitive(int(p), int(prim_num))
+
+if __name__ == "__main__":
+    main()
