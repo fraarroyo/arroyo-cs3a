@@ -7,6 +7,18 @@ def prime(n):
         if n % i == 0:
             return False
     return True
+
+def primitive_input(prompt):
+    while True:
+        user_input = input(prompt)
+        try:
+            n = int(user_input)
+            if n > 1:
+                return n
+            else:
+                print("Please enter a number greater than 1.")
+        except ValueError:
+            print("Please Enter a valid integer")
     
 def modulus(base, exponent, mod):
     result = 1
