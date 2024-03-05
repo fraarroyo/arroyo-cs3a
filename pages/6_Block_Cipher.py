@@ -60,11 +60,13 @@ def main():
             key_bytes = pad(bytes(key.encode()), block_size)
             encrypted_data = xor_encrypt(bytes(plaintext.encode()), key_bytes, block_size)
             decrypted_data = xor_decrypt(encrypted_data, key_bytes, block_size)
-            st.write("Plaintext:", plaintext)
-            st.write("Encryption key:", key)
-            st.write("Block size:", block_size)
-            st.write("Encrypted data:", encrypted_data.hex())
-            st.write("Decrypted data:", decrypted_data.decode())
+            st.write("\nOriginal plaintext:", decrypted_data)
+            st.write("Key byte      :", key)
+            st.write("Key hex       :", key.hex())
+            st.write("Encrypted data:",encrypted_data.hex())
+            st.write("Decrypted data:",decrypted_data.hex())
+            st.write("Decrypted data:",decrypted_data)
+    
 
 if __name__ == "__main__":
     main()
