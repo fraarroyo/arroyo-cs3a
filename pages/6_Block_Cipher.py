@@ -48,12 +48,10 @@ def main():
     key = st.text_input("Enter encryption key:")
     block_size = st.number_input("Enter block size", min_value=8, max_value=128, step=8, value=16)
 
-    if st.button("Encrypt"):
+    if st.button("Submit"):
         key = pad(bytes(key.encode()), block_size)
         encrypted_data = xor_encrypt(bytes(plaintext.encode()), key, block_size)
         st.write("Encrypted data:", encrypted_data.hex())
-
-    if st.button("Decrypt"):
         decrypted_data = xor_decrypt(bytes.fromhex(encrypted_data.hex()), key, block_size)
         st.write("Decrypted data:", decrypted_data.decode())
 
