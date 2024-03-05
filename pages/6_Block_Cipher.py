@@ -57,5 +57,5 @@ def main():
         decrypted_data = xor_decrypt(bytes.fromhex(encrypted_data.hex()), key, block_size)
         st.write("Decrypted data:", decrypted_data.decode())
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
