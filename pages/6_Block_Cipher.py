@@ -53,7 +53,7 @@ def main():
 
     plaintext = st.text_input("Enter plaintext:")
     key = st.text_input("Enter encryption key:")
-    block_size = st.number_input("Enter block size:")
+    block_size = st.input("Enter block size:")
 
     if block_size not in [8, 16, 32, 64, 128]:
         print("Block size must be one of 8, 16,  32, 64, or  128 bytes")
