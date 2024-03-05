@@ -26,18 +26,25 @@ def xor_decrypt_block(ciphertext_block, key):
 def xor_encrypt(plaintext, key, block_size):
     encrypted_data = b''
     padded_plaintext = pad(plaintext, block_size)
+
+    st.write("Encrypted blocks")
     for x, i in enumerate (range(0, len(padded_plaintext), block_size)):
         plaintext_block = padded_plaintext[i:i+block_size]
         encrypted_block = xor_encrypt_block(plaintext_block, key)
         encrypted_data += encrypted_block
+        st.write(f"Plain  block[{x}]: {plaintext_block.hex()} : {plaintext_block}")
+        st.write(f"Cipher block[{x}]: {encrypted_block.hex()} : {encrypted_block}")
     return encrypted_data        
 
 def xor_decrypt(ciphertext, key, block_size):
     decrypted_data = b''
+
+    st.write("Decrypted blocks")
     for x, i in enumerate (range(0, len(ciphertext), block_size)):
         ciphertext_block = ciphertext[i:i+block_size]
         decrypted_block = xor_decrypt_block(ciphertext_block, key)
         decrypted_data += decrypted_block
+        st.write(f"block[{x}]: {decrypted_block.hex()} :{decrypted_block}")
     unpadded_decrypted_data = unpad(decrypted_data)
     return unpadded_decrypted_data               
 
