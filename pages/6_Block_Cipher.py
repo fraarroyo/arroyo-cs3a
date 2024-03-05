@@ -55,14 +55,14 @@ def main():
     key = st.text_input("Enter encryption key:")
     block_size = st.number_input("Enter block size:")
 
-    if block_size not in [8, 16, 32, 64, 128]:
-        print("Block size must be one of 8, 16,  32, 64, or  128 bytes")
-    else:
-        key = pad(key, block_size)
-        encrypted_data = xor_encrypt(plaintext, key,block_size)
-        decrypted_data = xor_decrypt(encrypted_data, key, block_size)
 
     if st.button("Submit"):
+        if block_size not in [8, 16, 32, 64, 128]:
+            st.write("Block size must be one of 8, 16,  32, 64, or  128 bytes")
+        else:
+            key = pad(key, block_size)
+            encrypted_data = xor_encrypt(plaintext, key,block_size)
+            decrypted_data = xor_decrypt(encrypted_data, key, block_size)
         key = pad(bytes(key.encode()), block_size)
         encrypted_data = xor_encrypt(bytes(plaintext.encode()), key, block_size)
         st.write("Encrypted data:", encrypted_data.hex())
