@@ -58,8 +58,8 @@ def main():
             st.write("Block size must be one of 8, 16, 32, 64, or 128 bytes")
         else:
             key = pad(bytes(key.encode()), block_size)
-            encrypted_data = xor_encrypt(bytes(plaintext.encode()), key_bytes, block_size)
-            decrypted_data = xor_decrypt(encrypted_data, key_bytes, block_size)
+            encrypted_data = xor_encrypt(bytes(plaintext.encode()), key, block_size)
+            decrypted_data = xor_decrypt(encrypted_data, key, block_size)
             st.write("\nOriginal plaintext:", decrypted_data)
             st.write("Key byte      :", key)
             st.write("Key hex       :", key.hex())
