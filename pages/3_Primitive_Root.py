@@ -84,7 +84,12 @@ def main():
         symmetric_key = Fernet.generate_key()
 
     asymmetric_key_size = st.sidebar.selectbox("Select asymmetric key size:", (1024, 2048, 4096))
-    public_key, private_key = rsa.generate_key_pair(asymmetric_key_size)
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=asymmetric_key_size,
+        backend=default_backend()
+    )
+    public_key = private_key.public_key()
 
     options = st.sidebar.radio("Choose an option:", ("Symmetric Encryption (Text)", "Symmetric Encryption (File)",
                                                      "Symmetric Decryption (Text)", "Asymmetric Encryption (Text)",
