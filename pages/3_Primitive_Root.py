@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
+from cryptography.hazmat.primitives.asymmetric import padding as asymmetric_padding
 import base64
 from io import BytesIO
 
@@ -45,8 +46,8 @@ def asymmetric_text_encrypt(plaintext, public_key):
     try:
         cipher_text = public_key.encrypt(
             plaintext.encode(),
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            asymmetric_padding.OAEP(
+                mgf=asymmetric_padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
                 label=None
             )
