@@ -7,8 +7,6 @@ from cryptography.hazmat.primitives import padding, hashes
 import base64
 import binascii
 
-
-
 # Generate a symmetric key
 def generate_symmetric_key():
     return Fernet.generate_key()
@@ -20,8 +18,10 @@ def symmetric_text_encrypt(plaintext, key):
     return ciphertext
 
 # Symmetric decryption of text
-def symmetric_text_decrypt(encrypted_text, key):
+def symmetric_text_decrypt(encrypted_text, key=None):
     try:
+        if key is None:
+            key = generate_symmetric_key()
         encrypted_bytes = base64.b64decode(encrypted_text)
         cipher_suite = Fernet(key)
         decrypted_text = cipher_suite.decrypt(encrypted_bytes).decode()
