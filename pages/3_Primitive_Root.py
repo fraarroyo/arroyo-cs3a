@@ -141,8 +141,7 @@ def main():
             if decrypted_file is not None:
                 st.write("File Decrypted Successfully!")
                 # Download decrypted file
-                decrypted_file_io = BytesIO(decrypted_file)
-                st.download_button(label="Download Decrypted File", data=decrypted_file_io.getvalue(), file_name="decrypted_file.txt", mime="text/plain")
+                st.download_button(label="Download Decrypted File", data=decrypted_file, file_name="decrypted_file.txt", mime="text/plain")
 
     elif options == "Asymmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
