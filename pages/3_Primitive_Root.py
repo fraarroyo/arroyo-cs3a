@@ -73,15 +73,23 @@ def asymmetric_text_decrypt(ciphertext, private_key):
         error_message = f"Error decrypting text: {e}"
         return error_message
 
-# Hashing a text input
+# Updated hash_text function with error handling for unsupported hash types
 def hash_text(text, algorithm):
-    hasher = hashlib.new(algorithm)
+    supported_algorithms = ("md5", "sha1", "sha256", "sha512")
+    if algorithm.lower() not in supported_algorithms:
+        return f"Error: Unsupported hash algorithm '{algorithm}'. Please select one of the supported algorithms: {', '.join(supported_algorithms)}"
+    
+    hasher = hashlib.new(algorithm.lower())
     hasher.update(text.encode())
     return hasher.hexdigest()
 
 # Hashing a file
 def hash_file(file_content, algorithm):
-    hasher = hashlib.new(algorithm)
+    supported_algorithms = ("md5", "sha1", "sha256", "sha512")
+    if algorithm.lower() not in supported_algorithms:
+        return f"Error: Unsupported hash algorithm '{algorithm}'. Please select one of the supported algorithms: {', '.join(supported_algorithms)}"
+    
+    hasher = hashlib.new(algorithm.lower())
     hasher.update(file_content)
     return hasher.hexdigest()
 
@@ -142,12 +150,9 @@ def main():
     elif options == "Asymmetric Decryption (Text)":
         text = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
-            try:
-                ciphertext = base64.b64decode(text.encode())
-                decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
-                st.write("Decrypted Text:", decrypted_text)
-            except Exception as e:
-                st.write(f"Error: {e}")
+            ciphertext = base64.b64decode(text.encode())
+            decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
+            st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Hashing (Text)":
         text = st.text_area("Enter text to hash:")
