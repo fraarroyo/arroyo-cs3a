@@ -132,11 +132,14 @@ def main():
             st.write("Encrypted Text:", base64.b64encode(encrypted_text).decode())
 
     elif options == "Asymmetric Decryption (Text)":
-        text = st.text_area("Enter ciphertext to decrypt:")
-        if st.button("Decrypt"):
-            ciphertext = base64.b64decode(text.encode())
+    text = st.text_area("Enter ciphertext to decrypt:")
+    if st.button("Decrypt"):
+        try:
+            ciphertext = base64.b64decode(text)
             decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
             st.write("Decrypted Text:", decrypted_text)
+        except binascii.Error:
+            st.write("Error: Invalid base64 encoded input")
 
     elif options == "Hashing (Text)":
         text = st.text_area("Enter text to hash:")
