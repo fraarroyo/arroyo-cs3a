@@ -3,9 +3,7 @@ import hashlib
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import padding, hashes
 import base64
 
 # Generate a symmetric key
@@ -13,18 +11,19 @@ def generate_symmetric_key():
     return Fernet.generate_key()
 
 # Symmetric encryption of text
-def symmetric_text_encrypt(plaintext, key=None):
+def symmetric_text_encrypt(plaintext, key):
     cipher_suite = Fernet(key)
     ciphertext = cipher_suite.encrypt(plaintext.encode())
-    return ciphertext
+    return ciphertext, key  # Return both the encrypted text and the key
 
-def symmetric_text_decrypt(encrypted_text, key=None):
+# Symmetric decryption of text
+def symmetric_text_decrypt(encrypted_text, key):
     try:
-        if key is None:
-            key = generate_symmetric_key()
         cipher_suite = Fernet(key)
-        decrypted_bytes = cipher_suite.decrypt(encrypted_text)
-        return decrypted_bytes.decode()
+        if isinstance(encrypted_text, str):  # If input is string, convert to bytes
+            encrypted_text = encrypted_text.encode()
+        decrypted_text = cipher_suite.decrypt(encrypted_text).decode()
+        return decrypted_text
     except InvalidToken:
         return "Error: Invalid token or key"
 
@@ -43,55 +42,49 @@ def symmetric_file_decrypt(encrypted_file, key):
     except InvalidToken:
         return None
 
+# Asymmetric encryption of text
 def asymmetric_text_encrypt(plaintext, public_key):
-    try:
-        cipher_text = public_key.encrypt(
-            plaintext.encode(),
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
-        )
-        return base64.b64encode(cipher_text)
-    except Exception as e:
-        error_message = f"Error encrypting text: {e}"
-        return error_message
+    cipher_text = public_key.encrypt(
+        plaintext.encode(),
+        padding.PKCS1v15()
+    )
+    return base64.b64encode(cipher_text).decode()
 
+# Asymmetric decryption of text
 def asymmetric_text_decrypt(ciphertext, private_key):
     try:
+        ciphertext_bytes = base64.b64decode(ciphertext.encode())
         plaintext = private_key.decrypt(
-            ciphertext,
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
-        )
-        return plaintext.decode()
+            ciphertext_bytes,
+            padding.PKCS1v15()
+        ).decode()
+        return plaintext
     except Exception as e:
-        error_message = f"Error decrypting text: {e}"
-        return error_message
+        return f"Error: {e}"
 
-# Updated hash_text function with error handling for unsupported hash types
+# Hashing a text input
 def hash_text(text, algorithm):
-    supported_algorithms = ("md5", "sha1", "sha256", "sha512")
-    algorithm_lower = algorithm.lower()  # Convert algorithm name to lowercase
-    if algorithm_lower not in supported_algorithms:
-        return f"Error: Unsupported hash algorithm '{algorithm}'. Please select one of the supported algorithms: {', '.join(supported_algorithms)}"
-    
-    hasher = hashlib.new(algorithm_lower)
+    if algorithm == "MD5":
+        hasher = hashlib.md5()
+    elif algorithm == "SHA-1":
+        hasher = hashlib.sha1()
+    elif algorithm == "SHA-256":
+        hasher = hashlib.sha256()
+    elif algorithm == "SHA-512":
+        hasher = hashlib.sha512()
     hasher.update(text.encode())
     return hasher.hexdigest()
 
-# Updated hash_file function with error handling for unsupported hash types
+# Hashing a file
 def hash_file(file_content, algorithm):
-    supported_algorithms = ("md5", "sha1", "sha256", "sha512")
-    algorithm_lower = algorithm.lower()  # Convert algorithm name to lowercase
-    if algorithm_lower not in supported_algorithms:
-        return f"Error: Unsupported hash algorithm '{algorithm}'. Please select one of the supported algorithms: {', '.join(supported_algorithms)}"
-    
-    hasher = hashlib.new(algorithm_lower)
+    if algorithm == "MD5":
+        hasher = hashlib.md5()
+    elif algorithm == "SHA-1":
+        hasher = hashlib.sha1()
+    elif algorithm == "SHA-256":
+        hasher = hashlib.sha256()
+    elif algorithm == "SHA-512":
+        hasher = hashlib.sha512()
     hasher.update(file_content)
     return hasher.hexdigest()
 
@@ -104,9 +97,7 @@ def main():
     st.title("Applied Cryptography Application")
     st.write("Welcome to the Applied Cryptography Application. This app allows you to encrypt, decrypt, and hash messages and files using various cryptographic techniques.")
 
-    symmetric_key = st.sidebar.text_input("Enter symmetric key (32 bytes):")
-    if not symmetric_key:
-        symmetric_key = generate_symmetric_key()
+    symmetric_key = generate_symmetric_key()
 
     asymmetric_key_size = st.sidebar.selectbox("Select asymmetric key size:", (1024, 2048, 4096))
     private_key = rsa.generate_private_key(
@@ -123,8 +114,8 @@ def main():
     if options == "Symmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
         if st.button("Encrypt"):
-            encrypted_text = symmetric_text_encrypt(text, symmetric_key)
-            st.write("Encrypted Text:", encrypted_text.decode())
+            encrypted_text, symmetric_key = symmetric_text_encrypt(text, symmetric_key)
+            st.write("Encrypted Text:", encrypted_text)
 
     elif options == "Symmetric Encryption (File)":
         file = st.file_uploader("Upload file to encrypt:", type=["txt", "pdf"])
@@ -140,20 +131,22 @@ def main():
     elif options == "Symmetric Decryption (Text)":
         encrypted_text = st.text_area("Enter text to decrypt:")
         if st.button("Decrypt"):
-            decrypted_text = symmetric_text_decrypt(encrypted_text.encode(), symmetric_key)
-            st.write("Decrypted Text:", decrypted_text)
+            try:
+                decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)  # Pass the key for decryption
+                st.write("Decrypted Text:", decrypted_text)
+            except Exception as e:
+                st.write(f"Error: {e}")
 
     elif options == "Asymmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
         if st.button("Encrypt"):
             encrypted_text = asymmetric_text_encrypt(text, public_key)
-            st.write("Encrypted Text:", encrypted_text.decode())
+            st.write("Encrypted Text:", encrypted_text)
 
     elif options == "Asymmetric Decryption (Text)":
         text = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
-            ciphertext = base64.b64decode(text.encode())
-            decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
+            decrypted_text = asymmetric_text_decrypt(text, private_key)
             st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Hashing (Text)":
