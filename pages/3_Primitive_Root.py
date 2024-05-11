@@ -6,14 +6,9 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
 import base64
 
-# Global variable to store the symmetric key
-symmetric_key = Fernet.generate_key()
-
 # Generate a symmetric key
 def generate_symmetric_key():
-    global symmetric_key
-    symmetric_key = Fernet.generate_key()
-    return symmetric_key
+    return Fernet.generate_key()
 
 # Symmetric encryption of text
 def symmetric_text_encrypt(plaintext, key):
@@ -102,7 +97,7 @@ def main():
     st.title("Applied Cryptography Application")
     st.write("Welcome to the Applied Cryptography Application. This app allows you to encrypt, decrypt, and hash messages and files using various cryptographic techniques.")
 
-    global symmetric_key
+    symmetric_key = generate_symmetric_key()
 
     asymmetric_key_size = st.sidebar.selectbox("Select asymmetric key size:", (1024, 2048, 4096))
     private_key = rsa.generate_private_key(
