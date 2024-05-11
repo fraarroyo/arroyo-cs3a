@@ -6,27 +6,27 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
 import base64
 
-# Default symmetric key
-DEFAULT_SYMMETRIC_KEY = b'your_default_key_here'
-
-# Default asymmetric keys
-DEFAULT_PUBLIC_KEY = None
-DEFAULT_PRIVATE_KEY = None
+# Global variable to store the symmetric key
+symmetric_key = Fernet.generate_key()
 
 # Generate a symmetric key
 def generate_symmetric_key():
-    return DEFAULT_SYMMETRIC_KEY
+    global symmetric_key
+    symmetric_key = Fernet.generate_key()
+    return symmetric_key
 
 # Symmetric encryption of text
 def symmetric_text_encrypt(plaintext, key):
     cipher_suite = Fernet(key)
     ciphertext = cipher_suite.encrypt(plaintext.encode())
-    return ciphertext
+    return ciphertext, key  # Return both the encrypted text and the key
 
 # Symmetric decryption of text
 def symmetric_text_decrypt(encrypted_text, key):
     try:
         cipher_suite = Fernet(key)
+        if isinstance(encrypted_text, str):  # If input is string, convert to bytes
+            encrypted_text = encrypted_text.encode()
         decrypted_text = cipher_suite.decrypt(encrypted_text).decode()
         return decrypted_text
     except InvalidToken:
@@ -102,11 +102,15 @@ def main():
     st.title("Applied Cryptography Application")
     st.write("Welcome to the Applied Cryptography Application. This app allows you to encrypt, decrypt, and hash messages and files using various cryptographic techniques.")
 
-    symmetric_key = DEFAULT_SYMMETRIC_KEY
+    global symmetric_key
 
     asymmetric_key_size = st.sidebar.selectbox("Select asymmetric key size:", (1024, 2048, 4096))
-    private_key = DEFAULT_PRIVATE_KEY
-    public_key = DEFAULT_PUBLIC_KEY
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=asymmetric_key_size,
+        backend=default_backend()
+    )
+    public_key = private_key.public_key()
 
     options = st.sidebar.radio("Choose an option:", ("Symmetric Encryption (Text)", "Symmetric Encryption (File)", 
                                                      "Symmetric Decryption (Text)", "Asymmetric Encryption (Text)", 
@@ -115,7 +119,7 @@ def main():
     if options == "Symmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
         if st.button("Encrypt"):
-            encrypted_text = symmetric_text_encrypt(text, symmetric_key)
+            encrypted_text, symmetric_key = symmetric_text_encrypt(text, symmetric_key)
             st.write("Encrypted Text:", encrypted_text)
 
     elif options == "Symmetric Encryption (File)":
@@ -133,7 +137,7 @@ def main():
         encrypted_text = st.text_area("Enter text to decrypt:")
         if st.button("Decrypt"):
             try:
-                decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)
+                decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)  # Pass the key for decryption
                 st.write("Decrypted Text:", decrypted_text)
             except Exception as e:
                 st.write(f"Error: {e}")
