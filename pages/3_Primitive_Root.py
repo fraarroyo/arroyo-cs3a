@@ -67,8 +67,11 @@ def asymmetric_text_encrypt(plaintext, public_key=None):
 
 
 # Asymmetric decryption of text
-def asymmetric_text_decrypt(ciphertext, private_key):
+def asymmetric_text_decrypt(ciphertext, private_key=None):
     try:
+        if private_key is None:
+            return "Error: Private key is required for decryption."
+        
         ciphertext_bytes = base64.b64decode(ciphertext.encode())
         plaintext = private_key.decrypt(
             ciphertext_bytes,
