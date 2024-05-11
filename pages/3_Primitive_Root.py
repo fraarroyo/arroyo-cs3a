@@ -126,7 +126,7 @@ def main():
             st.write("File Encrypted Successfully!")
             # Download encrypted file
             b64_encoded_file = base64.b64encode(encrypted_file).decode()
-            href = f'<a href="data:file/txt;base64,{b64_encoded_file}" download="encrypted_file">Download encrypted file</a>'
+            href = f'<a href="data:file/txt;base64,{b64_encoded_file}" download="encrypted_file.txt">Download encrypted file</a>'
             st.markdown(href, unsafe_allow_html=True)
 
     elif options == "Symmetric Decryption (File)":
