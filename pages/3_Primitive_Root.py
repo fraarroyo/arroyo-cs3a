@@ -114,7 +114,7 @@ def main():
 
     options = st.sidebar.radio("Choose an option:", ("Symmetric Encryption (Text)", "Symmetric Encryption (File)", 
                                                      "Symmetric Decryption (File)", "Asymmetric Encryption (Text)", 
-                                                     "Hashing (Text)", "Hashing (File)"))
+                                                     "Asymmetric Decryption (Text)", "Hashing (Text)", "Hashing (File)"))
 
     if options == "Symmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
@@ -149,6 +149,12 @@ def main():
         if st.button("Encrypt"):
             encrypted_text = asymmetric_text_encrypt(text, public_key)
             st.write("Encrypted Text:", encrypted_text)
+
+    elif options == "Asymmetric Decryption (Text)":
+        text = st.text_area("Enter ciphertext to decrypt:")
+        if st.button("Decrypt"):
+            decrypted_text = asymmetric_text_decrypt(text, private_key)
+            st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Hashing (Text)":
         text = st.text_area("Enter text to hash:")
