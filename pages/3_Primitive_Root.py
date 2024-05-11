@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives import hashes
+from io import BytesIO
 
 # Symmetric encryption of text
 def symmetric_text_encrypt(plaintext, key):
@@ -75,6 +76,11 @@ def hash_file(file_content, algorithm):
     hasher.update(file_content)
     return hasher.hexdigest()
 
+# Helper function to read file content as bytes
+def read_file_content(file):
+    file_content = file.read()
+    return file_content
+
 def main():
     st.title("Encryption and Hashing App")
     st.write("This app provides symmetric and asymmetric encryption, as well as hashing functions.")
@@ -106,7 +112,7 @@ def main():
         file = st.file_uploader("Upload file to encrypt:", type=["txt", "pdf"])
         if st.button("Encrypt"):
             if file:
-                file_content = file.read()
+                file_content = read_file_content(file)  # Read file content
                 encrypted_file = symmetric_file_encrypt(file_content, symmetric_key)
                 st.write("File Encrypted Successfully!")
                 st.download_button("Download Encrypted File", encrypted_file, file_name="encrypted_file")
@@ -141,7 +147,7 @@ def main():
         algorithm = st.selectbox("Select hashing algorithm:", ("MD5", "SHA-1", "SHA-256", "SHA-512"))
         if st.button("Hash"):
             if file:
-                file_content = file.read()
+                file_content = read_file_content(file)  # Read file content
                 hashed_file = hash_file(file_content, algorithm)
                 st.write(f"File Hashed Successfully! (Algorithm: {algorithm}):", hashed_file)
 
