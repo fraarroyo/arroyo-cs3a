@@ -33,9 +33,12 @@ def symmetric_file_encrypt(file_content, key):
 
 # Symmetric decryption of file
 def symmetric_file_decrypt(encrypted_file, key):
-    cipher_suite = Fernet(key)
-    decrypted_file = cipher_suite.decrypt(encrypted_file)
-    return decrypted_file
+    try:
+        cipher_suite = Fernet(key)
+        decrypted_file = cipher_suite.decrypt(encrypted_file)
+        return decrypted_file
+    except InvalidToken:
+        return "Error: Invalid token or key"
 
 # Asymmetric encryption of text
 def asymmetric_text_encrypt(plaintext, public_key):
