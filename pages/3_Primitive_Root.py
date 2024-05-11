@@ -131,8 +131,10 @@ def main():
         text = st.text_area("Enter text to encrypt:")
         if st.button("Encrypt"):
             encrypted_text = asymmetric_text_encrypt(text, public_key)
-            st.write("Encrypted Text:", base64.b64encode(encrypted_text).decode())
-
+            if isinstance(encrypted_text, bytes):
+                encrypted_text = encrypted_text.decode()
+            st.write("Encrypted Text:", encrypted_text)
+            
     elif options == "Asymmetric Decryption (Text)":
         text = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
