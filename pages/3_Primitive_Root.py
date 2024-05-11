@@ -26,8 +26,13 @@ def symmetric_text_decrypt(encrypted_text, key=None):
             key = generate_symmetric_key()
         encrypted_bytes = base64.b64decode(encrypted_text)
         cipher_suite = Fernet(key)
-        decrypted_text = cipher_suite.decrypt(encrypted_bytes).decode('latin-1')
-        return decrypted_text
+        for encoding in ['utf-8', 'latin-1', 'utf-16', 'utf-32']:
+            try:
+                decrypted_text = cipher_suite.decrypt(encrypted_bytes).decode(encoding)
+                return decrypted_text
+            except UnicodeDecodeError:
+                continue
+        return "Error: Unable to decode decrypted text"
     except (InvalidToken, binascii.Error):
         return "Error: Invalid token or key"
 
