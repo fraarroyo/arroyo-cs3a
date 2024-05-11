@@ -55,7 +55,8 @@ def asymmetric_text_encrypt(plaintext, public_key):
         )
         return base64.b64encode(cipher_text)
     except Exception as e:
-        return f"Error: {e}"
+        error_message = f"Error encrypting text: {e}"
+        return error_message
 
 # Asymmetric decryption of text
 def asymmetric_text_decrypt(ciphertext, private_key):
