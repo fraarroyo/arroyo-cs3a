@@ -4,11 +4,7 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
-from cryptography.hazmat.primitives.asymmetric import padding as asymmetric_padding
-from cryptography.hazmat.primitives import padding as symmetric_padding
-
 import base64
-from io import BytesIO
 
 # Generate a symmetric key
 def generate_symmetric_key():
@@ -44,32 +40,26 @@ def symmetric_file_decrypt(encrypted_file, key):
     except InvalidToken:
         return None
 
+# Asymmetric encryption of text
 def asymmetric_text_encrypt(plaintext, public_key):
-    try:
-        cipher_text = public_key.encrypt(
-            plaintext.encode(),
-            asymmetric_padding.OAEP(
-                mgf=asymmetric_padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
+    cipher_text = public_key.encrypt(
+        plaintext.encode(),
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
         )
-        return cipher_text
-    except Exception as e:
-        return f"Error: {e}"
+    )
+    return base64.b64encode(cipher_text).decode()
 
+# Asymmetric decryption of text
 def asymmetric_text_decrypt(ciphertext, private_key):
     try:
-        # Add padding if necessary
-        padding_length = len(ciphertext) % 4
-        if padding_length != 0:
-            ciphertext += '=' * (4 - padding_length)
-
         ciphertext_bytes = base64.b64decode(ciphertext.encode())
         plaintext = private_key.decrypt(
             ciphertext_bytes,
-            asymmetric_padding.OAEP(
-                mgf=asymmetric_padding.MGF1(algorithm=hashes.SHA256()),
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
                 algorithm=hashes.SHA256(),
                 label=None
             )
@@ -164,9 +154,9 @@ def main():
             st.write("Encrypted Text:", encrypted_text)
 
     elif options == "Asymmetric Decryption (Text)":
-        text = st.text_area("Enter ciphertext to decrypt:")
+        ciphertext = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
-            decrypted_text = asymmetric_text_decrypt(text, private_key)
+            decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
             st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Hashing (Text)":
