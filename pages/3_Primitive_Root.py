@@ -19,10 +19,11 @@ def symmetric_text_encrypt(plaintext, key):
 # Symmetric decryption of text
 def symmetric_text_decrypt(encrypted_text, key):
     try:
+        encrypted_bytes = base64.b64decode(encrypted_text)
         cipher_suite = Fernet(key)
-        decrypted_text = cipher_suite.decrypt(encrypted_text).decode()
+        decrypted_text = cipher_suite.decrypt(encrypted_bytes).decode()
         return decrypted_text
-    except InvalidToken:
+    except (InvalidToken, binascii.Error):
         return "Error: Invalid token or key"
 
 # Symmetric encryption of file
