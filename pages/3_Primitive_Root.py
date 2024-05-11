@@ -132,7 +132,7 @@ def main():
     elif options == "Symmetric Decryption (Text)":
         encrypted_text = st.text_area("Enter text to decrypt:")
         if st.button("Decrypt"):
-            decrypted_text = symmetric_text_decrypt(base64.b64decode(encrypted_text.encode()), symmetric_key)
+            decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)
             st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Asymmetric Encryption (Text)":
