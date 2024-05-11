@@ -15,7 +15,7 @@ def generate_symmetric_key():
     return Fernet.generate_key()
 
 # Symmetric encryption of text
-def symmetric_text_encrypt(plaintext, key):
+def symmetric_text_encrypt(plaintext, key=None):
     cipher_suite = Fernet(key)
     ciphertext = cipher_suite.encrypt(plaintext.encode())
     return ciphertext
