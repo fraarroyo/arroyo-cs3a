@@ -5,6 +5,9 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
 import base64
+import binascii
+
+
 
 # Generate a symmetric key
 def generate_symmetric_key():
