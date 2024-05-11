@@ -41,17 +41,19 @@ def symmetric_file_decrypt(encrypted_file, key):
     except InvalidToken:
         return None
 
-# Asymmetric encryption of text
 def asymmetric_text_encrypt(plaintext, public_key):
-    cipher_text = public_key.encrypt(
-        plaintext.encode(),
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
+    try:
+        cipher_text = public_key.encrypt(
+            plaintext.encode(),
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
         )
-    )
-    return cipher_text
+        return cipher_text
+    except Exception as e:
+        return f"Error: {e}"
 
 # Asymmetric decryption of text
 def asymmetric_text_decrypt(ciphertext, private_key):
