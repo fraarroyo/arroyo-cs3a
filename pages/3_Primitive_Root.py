@@ -1,7 +1,7 @@
 import streamlit as st
 import hashlib
 from cryptography.fernet import Fernet
-from cryptography.fernet.InvalidToken import InvalidToken
+from cryptography.fernet import InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
