@@ -20,6 +20,8 @@ def symmetric_text_encrypt(plaintext, key):
 def symmetric_text_decrypt(encrypted_text, key):
     try:
         cipher_suite = Fernet(key)
+        if isinstance(encrypted_text, str):  # If input is string, convert to bytes
+            encrypted_text = encrypted_text.encode()
         decrypted_text = cipher_suite.decrypt(encrypted_text).decode()
         return decrypted_text
     except InvalidToken:
@@ -130,7 +132,7 @@ def main():
         encrypted_text = st.text_area("Enter text to decrypt:")
         if st.button("Decrypt"):
             try:
-                decrypted_text = symmetric_text_decrypt(encrypted_text.encode(), symmetric_key)  # Pass the key for decryption
+                decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)  # Pass the key for decryption
                 st.write("Decrypted Text:", decrypted_text)
             except Exception as e:
                 st.write(f"Error: {e}")
