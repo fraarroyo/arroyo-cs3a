@@ -134,7 +134,7 @@ def main():
             st.markdown(href, unsafe_allow_html=True)
 
     elif options == "Symmetric Decryption (File)":
-        file = st.file_uploader("Upload file to decrypt:", type=["txt", "pdf"])
+        file = st.file_uploader("Upload file to decrypt:", type=["all files","txt", "pdf"])
         if file is not None:
             encrypted_content = read_file_content(file)
             decrypted_file = symmetric_file_decrypt(encrypted_content, symmetric_key)
