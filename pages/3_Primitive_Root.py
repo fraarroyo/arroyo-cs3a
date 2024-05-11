@@ -5,6 +5,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
 from cryptography.hazmat.primitives.asymmetric import padding as asymmetric_padding
+from cryptography.hazmat.primitives import padding as symmetric_padding
+
 import base64
 from io import BytesIO
 
@@ -56,17 +58,19 @@ def asymmetric_text_encrypt(plaintext, public_key):
     except Exception as e:
         return f"Error: {e}"
 
-# Asymmetric decryption of text
 def asymmetric_text_decrypt(ciphertext, private_key):
-    plaintext = private_key.decrypt(
-        ciphertext,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
-        )
-    ).decode()
-    return plaintext
+    try:
+        plaintext = private_key.decrypt(
+            ciphertext,
+            asymmetric_padding.OAEP(
+                mgf=asymmetric_padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        ).decode()
+        return plaintext
+    except Exception as e:
+        return f"Error: {e}"
 
 # Hashing a text input
 def hash_text(text, algorithm):
