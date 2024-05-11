@@ -14,7 +14,7 @@ def generate_symmetric_key():
 def symmetric_text_encrypt(plaintext, key):
     cipher_suite = Fernet(key)
     ciphertext = cipher_suite.encrypt(plaintext.encode())
-    return ciphertext
+    return ciphertext, key
 
 # Symmetric decryption of text
 def symmetric_text_decrypt(encrypted_text, key):
@@ -95,9 +95,7 @@ def main():
     st.title("Applied Cryptography Application")
     st.write("Welcome to the Applied Cryptography Application. This app allows you to encrypt, decrypt, and hash messages and files using various cryptographic techniques.")
 
-    symmetric_key = st.sidebar.text_input("Enter symmetric key (32 bytes):")
-    if not symmetric_key:
-        symmetric_key = generate_symmetric_key()
+    symmetric_key = generate_symmetric_key()
 
     asymmetric_key_size = st.sidebar.selectbox("Select asymmetric key size:", (1024, 2048, 4096))
     private_key = rsa.generate_private_key(
@@ -114,7 +112,7 @@ def main():
     if options == "Symmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
         if st.button("Encrypt"):
-            encrypted_text = symmetric_text_encrypt(text, symmetric_key)
+            encrypted_text, symmetric_key = symmetric_text_encrypt(text, symmetric_key)
             st.write("Encrypted Text:", encrypted_text)
 
     elif options == "Symmetric Encryption (File)":
