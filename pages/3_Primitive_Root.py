@@ -131,6 +131,8 @@ def main():
     elif options == "Symmetric Decryption (Text)":
         encrypted_text = st.text_area("Enter text to decrypt:")
         if st.button("Decrypt"):
+            print("Input type:", type(encrypted_text))  # Print input type
+            print("Input content:", encrypted_text)  # Print input content
             try:
                 decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)  # Pass the key for decryption
                 st.write("Decrypted Text:", decrypted_text)
