@@ -1,12 +1,14 @@
 import streamlit as st
+import hashlib
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
-from Crypto.Cipher import AES
+from cryptography.hazmat.primitives import padding, hashes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.asymmetric import padding
+
 import base64
 import binascii
-import
 
 # Generate a symmetric key
 def generate_symmetric_key():
@@ -14,9 +16,6 @@ def generate_symmetric_key():
 
 # Symmetric encryption of text
 def symmetric_text_encrypt(plaintext, key=None):
-    # Ensure the key is the correct length
-    key = key[:32].ljust(32, b'\0')  # Pad or truncate the key to 32 bytes (AES-256)
-
     cipher_suite = Fernet(key)
     ciphertext = cipher_suite.encrypt(plaintext.encode())
     return ciphertext
