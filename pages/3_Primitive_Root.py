@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
+import base64
 
 # Generate a symmetric key
 def generate_symmetric_key():
@@ -29,6 +30,12 @@ def symmetric_file_encrypt(file_content, key):
     cipher_suite = Fernet(key)
     ciphertext = cipher_suite.encrypt(file_content)
     return ciphertext
+
+# Symmetric decryption of file
+def symmetric_file_decrypt(encrypted_file, key):
+    cipher_suite = Fernet(key)
+    decrypted_file = cipher_suite.decrypt(encrypted_file)
+    return decrypted_file
 
 # Asymmetric encryption of text
 def asymmetric_text_encrypt(plaintext, public_key):
@@ -102,7 +109,8 @@ def main():
     public_key = private_key.public_key()
 
     options = st.sidebar.radio("Choose an option:", ("Symmetric Encryption (Text)", "Symmetric Encryption (File)", 
-                                                     "Asymmetric Encryption (Text)", "Hashing (Text)", "Hashing (File)"))
+                                                     "Symmetric Decryption (File)", "Asymmetric Encryption (Text)", 
+                                                     "Hashing (Text)", "Hashing (File)"))
 
     if options == "Symmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
@@ -116,6 +124,19 @@ def main():
             file_content = read_file_content(file)
             encrypted_file = symmetric_file_encrypt(file_content, symmetric_key)
             st.write("File Encrypted Successfully!")
+            # Download encrypted file
+            b64_encoded_file = base64.b64encode(encrypted_file).decode()
+            href = f'<a href="data:file/txt;base64,{b64_encoded_file}" download="encrypted_file">Download encrypted file</a>'
+            st.markdown(href, unsafe_allow_html=True)
+
+    elif options == "Symmetric Decryption (File)":
+        file = st.file_uploader("Upload file to decrypt:", type=["txt", "pdf"])
+        if file is not None:
+            encrypted_content = read_file_content(file)
+            decrypted_file = symmetric_file_decrypt(encrypted_content, symmetric_key)
+            st.write("File Decrypted Successfully!")
+            # Display decrypted file content
+            st.text(decrypted_file.decode())
 
     elif options == "Asymmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
