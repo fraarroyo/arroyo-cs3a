@@ -1,6 +1,7 @@
 import streamlit as st
 import hashlib
 from cryptography.fernet import Fernet
+from cryptography.fernet.InvalidToken import InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -16,9 +17,12 @@ def symmetric_text_encrypt(plaintext, key):
 
 # Symmetric decryption of text
 def symmetric_text_decrypt(ciphertext, key):
-    cipher_suite = Fernet(key)
-    plaintext = cipher_suite.decrypt(ciphertext).decode()
-    return plaintext
+    try:
+        cipher_suite = Fernet(key)
+        plaintext = cipher_suite.decrypt(ciphertext).decode()
+        return plaintext
+    except InvalidToken:
+        return "Error: Invalid token or key"
 
 # Symmetric encryption of file
 def symmetric_file_encrypt(file_content, key):
