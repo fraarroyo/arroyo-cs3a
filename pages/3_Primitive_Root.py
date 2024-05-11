@@ -20,7 +20,7 @@ def symmetric_text_encrypt(plaintext, key):
 def symmetric_text_decrypt(encrypted_text, key):
     try:
         cipher_suite = Fernet(key)
-        decrypted_text = cipher_suite.decrypt(encrypted_text).decode()
+        decrypted_text = cipher_suite.decrypt(encrypted_text.encode()).decode()
         return decrypted_text
     except InvalidToken:
         return "Error: Invalid token or key"
@@ -108,7 +108,7 @@ def main():
     public_key = private_key.public_key()
 
     options = st.sidebar.radio("Choose an option:", ("Symmetric Encryption (Text)", "Symmetric Encryption (File)", 
-                                                     "Symmetric Decryption (File)", "Asymmetric Encryption (Text)", 
+                                                     "Symmetric Decryption (Text)", "Asymmetric Encryption (Text)", 
                                                      "Asymmetric Decryption (Text)", "Hashing (Text)", "Hashing (File)"))
 
     if options == "Symmetric Encryption (Text)":
@@ -128,15 +128,11 @@ def main():
             href = f'<a href="data:file/txt;base64,{b64_encoded_file}" download="encrypted_file.txt">Download encrypted file</a>'
             st.markdown(href, unsafe_allow_html=True)
 
-    elif options == "Symmetric Decryption (File)":
-        file = st.file_uploader("Upload file to decrypt:", type=["txt", "pdf"])
-        if file is not None:
-            encrypted_content = read_file_content(file)
-            decrypted_file = symmetric_file_decrypt(encrypted_content, symmetric_key)
-            if decrypted_file is not None:
-                st.write("File Decrypted Successfully!")
-                # Download decrypted file
-                st.download_button(label="Download Decrypted File", data=decrypted_file, file_name="decrypted_file.txt", mime="text/plain")
+    elif options == "Symmetric Decryption (Text)":
+        encrypted_text = st.text_area("Enter text to decrypt:")
+        if st.button("Decrypt"):
+            decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)
+            st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Asymmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
