@@ -46,14 +46,6 @@ def symmetric_file_decrypt(encrypted_file, key):
     except InvalidToken:
         return None
 
-# Asymmetric encryption of text
-def asymmetric_text_encrypt(plaintext, public_key):
-    cipher_text = public_key.encrypt(
-        plaintext.encode(),
-        padding.PKCS1v15()
-    )
-    return base64.b64encode(cipher_text).decode()
-
 def asymmetric_text_encrypt(plaintext, public_key=None):
     try:
         if public_key is None:
@@ -73,6 +65,18 @@ def asymmetric_text_encrypt(plaintext, public_key=None):
     except Exception as e:
         return f"Error: {e}"
 
+
+# Asymmetric decryption of text
+def asymmetric_text_decrypt(ciphertext, private_key):
+    try:
+        ciphertext_bytes = base64.b64decode(ciphertext.encode())
+        plaintext = private_key.decrypt(
+            ciphertext_bytes,
+            padding.PKCS1v15()
+        ).decode()
+        return plaintext
+    except Exception as e:
+        return f"Error: {e}"
 
 # Hashing a text input
 def hash_text(text, algorithm):
