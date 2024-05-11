@@ -5,6 +5,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
 import base64
+from io import BytesIO
 
 # Generate a symmetric key
 def generate_symmetric_key():
@@ -38,7 +39,7 @@ def symmetric_file_decrypt(encrypted_file, key):
         decrypted_file = cipher_suite.decrypt(encrypted_file)
         return decrypted_file
     except InvalidToken:
-        return "Error: Invalid token or key"
+        return None
 
 # Asymmetric encryption of text
 def asymmetric_text_encrypt(plaintext, public_key):
@@ -137,9 +138,11 @@ def main():
         if file is not None:
             encrypted_content = read_file_content(file)
             decrypted_file = symmetric_file_decrypt(encrypted_content, symmetric_key)
-            st.write("File Decrypted Successfully!")
-            # Display decrypted file content
-            st.text(decrypted_file.decode())
+            if decrypted_file is not None:
+                st.write("File Decrypted Successfully!")
+                # Download decrypted file
+                decrypted_file_io = BytesIO(decrypted_file)
+                st.download_button(label="Download Decrypted File", data=decrypted_file_io, file_name="decrypted_file.txt", mime="text/plain")
 
     elif options == "Asymmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
