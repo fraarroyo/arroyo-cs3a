@@ -1,5 +1,3 @@
-#!/path/to/python3.11
-
 import streamlit as st
 from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
@@ -9,10 +7,16 @@ from Crypto.Hash import SHA256
 st.header("AES Encryption")
 
 def aes_encrypt(plaintext, key):
+    # Ensure the key is the correct length
+    key = key[:32].ljust(32, b'\0')  # Pad or truncate the key to 32 bytes (AES-256)
+
     cipher = AES.new(key, AES.MODE_ECB)
     return cipher.encrypt(plaintext)
 
 def aes_decrypt(ciphertext, key):
+    # Ensure the key is the correct length
+    key = key[:32].ljust(32, b'\0')  # Pad or truncate the key to 32 bytes (AES-256)
+
     cipher = AES.new(key, AES.MODE_ECB)
     return cipher.decrypt(ciphertext)
 
