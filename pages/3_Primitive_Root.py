@@ -20,7 +20,7 @@ def symmetric_text_encrypt(plaintext, key):
 def symmetric_text_decrypt(encrypted_text, key):
     try:
         cipher_suite = Fernet(key)
-        decrypted_text = cipher_suite.decrypt(encrypted_text).decode()
+        decrypted_text = cipher_suite.decrypt(encrypted_text.encode()).decode()
         return decrypted_text
     except InvalidToken:
         return "Error: Invalid token or key"
@@ -129,11 +129,8 @@ def main():
     elif options == "Symmetric Decryption (Text)":
         encrypted_text = st.text_area("Enter text to decrypt:")
         if st.button("Decrypt"):
-            try:
-                decrypted_text = symmetric_text_decrypt(encrypted_text.encode(), symmetric_key)  # Pass the key for decryption
-                st.write("Decrypted Text:", decrypted_text)
-            except Exception as e:
-                st.write(f"Error: {e}")
+            decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)  # Pass the key for decryption
+            st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Asymmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
