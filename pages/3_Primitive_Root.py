@@ -1,13 +1,9 @@
 import streamlit as st
 import hashlib
-from cryptography.fernet import Fernet
-from cryptography.fernet import InvalidToken
+from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.primitives import hashes
-from io import BytesIO
+from cryptography.hazmat.primitives import padding, hashes
 
 # Symmetric encryption of text
 def symmetric_text_encrypt(plaintext, key):
@@ -101,10 +97,8 @@ def main():
     )
     public_key = private_key.public_key()
 
-    options = st.sidebar.radio("Choose an option:", ("Symmetric Encryption (Text)", "Symmetric Encryption (File)",
-                                                     "Symmetric Decryption (Text)", "Asymmetric Encryption (Text)",
-                                                     "Asymmetric Decryption (Text)", "Hashing (Text)",
-                                                     "Hashing (File)"))
+    options = st.sidebar.radio("Choose an option:", ("Symmetric Encryption (Text)", "Symmetric Decryption (Text)", "Asymmetric Encryption (Text)",
+                                                     "Asymmetric Decryption (Text)", "Hashing (Text)", "Hashing (File)"))
 
     if options == "Symmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
@@ -112,19 +106,10 @@ def main():
             encrypted_text = symmetric_text_encrypt(text, symmetric_key)
             st.write("Encrypted Text:", encrypted_text)
 
-    elif options == "Symmetric Encryption (File)":
-        file = st.file_uploader("Upload file to encrypt:", type=["txt", "pdf"])
-        if st.button("Encrypt"):
-            if file:
-                file_content = read_file_content(file)  # Read file content
-                encrypted_file = symmetric_file_encrypt(file_content, symmetric_key)
-                st.write("File Encrypted Successfully!")
-                st.download_button("Download Encrypted File", encrypted_file, file_name="encrypted_file")
-
     elif options == "Symmetric Decryption (Text)":
         ciphertext = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
-            decrypted_text = symmetric_text_decrypt(ciphertext, symmetric_key)
+            decrypted_text = symmetric_text_decrypt(ciphertext.encode(), symmetric_key)
             st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Asymmetric Encryption (Text)":
