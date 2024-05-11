@@ -5,6 +5,10 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding, hashes
 
+# Generate a symmetric key
+def generate_symmetric_key():
+    return Fernet.generate_key()
+
 # Symmetric encryption of text
 def symmetric_text_encrypt(plaintext, key):
     cipher_suite = Fernet(key)
@@ -87,7 +91,7 @@ def main():
 
     symmetric_key = st.sidebar.text_input("Enter symmetric key (32 bytes):")
     if not symmetric_key:
-        symmetric_key = Fernet.generate_key()
+        symmetric_key = generate_symmetric_key()
 
     asymmetric_key_size = st.sidebar.selectbox("Select asymmetric key size:", (1024, 2048, 4096))
     private_key = rsa.generate_private_key(
