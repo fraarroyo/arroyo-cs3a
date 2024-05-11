@@ -134,19 +134,14 @@ def main():
         text = st.text_area("Enter text to encrypt:")
         if st.button("Encrypt"):
             encrypted_text = asymmetric_text_encrypt(text, public_key)
-            if isinstance(encrypted_text, bytes):
-                encrypted_text = encrypted_text.decode()
-            st.write("Encrypted Text:", encrypted_text)
+            st.write("Encrypted Text:", encrypted_text.decode())
 
     elif options == "Asymmetric Decryption (Text)":
         text = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
-            try:
-                ciphertext = base64.b64decode(text)
-                decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
-                st.write("Decrypted Text:", decrypted_text)
-            except binascii.Error:
-                st.write("Error: Invalid base64 encoded input")
+            ciphertext = base64.b64decode(text.encode())
+            decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
+            st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Hashing (Text)":
         text = st.text_area("Enter text to hash:")
@@ -166,3 +161,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
