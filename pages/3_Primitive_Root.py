@@ -15,11 +15,13 @@ def symmetric_text_encrypt(plaintext, key):
 def symmetric_text_decrypt(ciphertext, key):
     try:
         cipher_suite = Fernet(key)
-        plaintext = cipher_suite.decrypt(ciphertext).decode()
+        plaintext = cipher_suite.decrypt(ciphertext.encode()).decode()
         return plaintext
     except InvalidToken:
         return "Error: Invalid token or key"
-
+    except Exception as e:
+        return f"Error: {e}"
+    
 # Symmetric encryption of file
 def symmetric_file_encrypt(file_content, key):
     cipher_suite = Fernet(key)
