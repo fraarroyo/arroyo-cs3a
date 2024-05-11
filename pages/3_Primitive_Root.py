@@ -76,20 +76,22 @@ def asymmetric_text_decrypt(ciphertext, private_key):
 # Updated hash_text function with error handling for unsupported hash types
 def hash_text(text, algorithm):
     supported_algorithms = ("md5", "sha1", "sha256", "sha512")
-    if algorithm.lower() not in supported_algorithms:
+    algorithm_lower = algorithm.lower()  # Convert algorithm name to lowercase
+    if algorithm_lower not in supported_algorithms:
         return f"Error: Unsupported hash algorithm '{algorithm}'. Please select one of the supported algorithms: {', '.join(supported_algorithms)}"
     
-    hasher = hashlib.new(algorithm.lower())
+    hasher = hashlib.new(algorithm_lower)
     hasher.update(text.encode())
     return hasher.hexdigest()
 
-# Hashing a file
+# Updated hash_file function with error handling for unsupported hash types
 def hash_file(file_content, algorithm):
     supported_algorithms = ("md5", "sha1", "sha256", "sha512")
-    if algorithm.lower() not in supported_algorithms:
+    algorithm_lower = algorithm.lower()  # Convert algorithm name to lowercase
+    if algorithm_lower not in supported_algorithms:
         return f"Error: Unsupported hash algorithm '{algorithm}'. Please select one of the supported algorithms: {', '.join(supported_algorithms)}"
     
-    hasher = hashlib.new(algorithm.lower())
+    hasher = hashlib.new(algorithm_lower)
     hasher.update(file_content)
     return hasher.hexdigest()
 
