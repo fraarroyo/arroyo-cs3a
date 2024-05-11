@@ -1,3 +1,5 @@
+#!/path/to/python3.11
+
 import streamlit as st
 from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
