@@ -61,7 +61,7 @@ def asymmetric_text_encrypt(plaintext, public_key=None):
             plaintext.encode(),
             padding.PKCS1v15()
         )
-        return base64.b64encode(cipher_text).decode()
+        return cipher_text  # Return encrypted bytes
     except Exception as e:
         return f"Error: {e}"
 
