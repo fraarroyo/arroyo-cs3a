@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.asymmetric import padding
 import base64
 
 # Generate a symmetric key
@@ -134,7 +135,7 @@ def main():
             if isinstance(encrypted_text, bytes):
                 encrypted_text = encrypted_text.decode()
             st.write("Encrypted Text:", encrypted_text)
-            
+
     elif options == "Asymmetric Decryption (Text)":
         text = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
