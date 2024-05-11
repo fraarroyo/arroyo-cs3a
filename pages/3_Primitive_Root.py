@@ -14,7 +14,7 @@ def generate_symmetric_key():
 def symmetric_text_encrypt(plaintext, key):
     cipher_suite = Fernet(key)
     ciphertext = cipher_suite.encrypt(plaintext.encode())
-    return ciphertext, key
+    return ciphertext, key  # Return both the encrypted text and the key
 
 # Symmetric decryption of text
 def symmetric_text_decrypt(encrypted_text, key):
@@ -129,7 +129,7 @@ def main():
     elif options == "Symmetric Decryption (Text)":
         encrypted_text = st.text_area("Enter text to decrypt:")
         if st.button("Decrypt"):
-            decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)
+            decrypted_text = symmetric_text_decrypt(encrypted_text, symmetric_key)  # Pass the key for decryption
             st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Asymmetric Encryption (Text)":
