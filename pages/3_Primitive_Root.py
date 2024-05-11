@@ -54,17 +54,25 @@ def asymmetric_text_encrypt(plaintext, public_key):
     )
     return base64.b64encode(cipher_text).decode()
 
-# Asymmetric decryption of text
-def asymmetric_text_decrypt(ciphertext, private_key):
+def asymmetric_text_encrypt(plaintext, public_key=None):
     try:
-        ciphertext_bytes = base64.b64decode(ciphertext.encode())
-        plaintext = private_key.decrypt(
-            ciphertext_bytes,
+        if public_key is None:
+            asymmetric_key_size = 2048  # Default key size
+            private_key = rsa.generate_private_key(
+                public_exponent=65537,
+                key_size=asymmetric_key_size,
+                backend=default_backend()
+            )
+            public_key = private_key.public_key()
+
+        cipher_text = public_key.encrypt(
+            plaintext.encode(),
             padding.PKCS1v15()
-        ).decode()
-        return plaintext
+        )
+        return base64.b64encode(cipher_text).decode()
     except Exception as e:
         return f"Error: {e}"
+
 
 # Hashing a text input
 def hash_text(text, algorithm):
