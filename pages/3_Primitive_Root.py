@@ -44,11 +44,7 @@ def symmetric_file_decrypt(encrypted_file, key):
 def asymmetric_text_encrypt(plaintext, public_key):
     cipher_text = public_key.encrypt(
         plaintext.encode(),
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
-        )
+        padding.PKCS1v15()
     )
     return base64.b64encode(cipher_text).decode()
 
@@ -58,11 +54,7 @@ def asymmetric_text_decrypt(ciphertext, private_key):
         ciphertext_bytes = base64.b64decode(ciphertext.encode())
         plaintext = private_key.decrypt(
             ciphertext_bytes,
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
+            padding.PKCS1v15()
         ).decode()
         return plaintext
     except Exception as e:
@@ -144,8 +136,7 @@ def main():
             if decrypted_file is not None:
                 st.write("File Decrypted Successfully!")
                 # Download decrypted file
-                decrypted_filename = f"decrypted_{file.name}" if file.name else "decrypted_file.txt"
-                st.download_button(label="Download Decrypted File", data=decrypted_file, file_name=decrypted_filename, mime="text/plain")
+                st.download_button(label="Download Decrypted File", data=decrypted_file, file_name="decrypted_file.txt", mime="text/plain")
 
     elif options == "Asymmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
@@ -154,9 +145,9 @@ def main():
             st.write("Encrypted Text:", encrypted_text)
 
     elif options == "Asymmetric Decryption (Text)":
-        ciphertext = st.text_area("Enter ciphertext to decrypt:")
+        text = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
-            decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
+            decrypted_text = asymmetric_text_decrypt(text, private_key)
             st.write("Decrypted Text:", decrypted_text)
 
     elif options == "Hashing (Text)":
