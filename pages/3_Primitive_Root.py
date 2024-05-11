@@ -58,7 +58,6 @@ def asymmetric_text_encrypt(plaintext, public_key):
         error_message = f"Error encrypting text: {e}"
         return error_message
 
-# Asymmetric decryption of text
 def asymmetric_text_decrypt(ciphertext, private_key):
     try:
         plaintext = private_key.decrypt(
@@ -71,8 +70,8 @@ def asymmetric_text_decrypt(ciphertext, private_key):
         )
         return plaintext.decode()
     except Exception as e:
-        return f"Error: {e}"
-
+        error_message = f"Error decrypting text: {e}"
+        return error_message
 
 # Hashing a text input
 def hash_text(text, algorithm):
@@ -143,9 +142,12 @@ def main():
     elif options == "Asymmetric Decryption (Text)":
         text = st.text_area("Enter ciphertext to decrypt:")
         if st.button("Decrypt"):
-            ciphertext = base64.b64decode(text.encode())
-            decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
-            st.write("Decrypted Text:", decrypted_text)
+            try:
+                ciphertext = base64.b64decode(text.encode())
+                decrypted_text = asymmetric_text_decrypt(ciphertext, private_key)
+                st.write("Decrypted Text:", decrypted_text)
+            except Exception as e:
+                st.write(f"Error: {e}")
 
     elif options == "Hashing (Text)":
         text = st.text_area("Enter text to hash:")
@@ -165,4 +167,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
