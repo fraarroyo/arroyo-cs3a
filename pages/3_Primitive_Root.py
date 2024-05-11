@@ -60,15 +60,19 @@ def asymmetric_text_encrypt(plaintext, public_key):
 
 # Asymmetric decryption of text
 def asymmetric_text_decrypt(ciphertext, private_key):
-    plaintext = private_key.decrypt(
-        ciphertext,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
+    try:
+        plaintext = private_key.decrypt(
+            ciphertext,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
         )
-    )
-    return plaintext.decode()
+        return plaintext.decode()
+    except Exception as e:
+        return f"Error: {e}"
+
 
 # Hashing a text input
 def hash_text(text, algorithm):
