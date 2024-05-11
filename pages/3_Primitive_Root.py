@@ -134,14 +134,15 @@ def main():
             st.markdown(href, unsafe_allow_html=True)
 
     elif options == "Symmetric Decryption (File)":
-        file = st.file_uploader("Upload file to decrypt:", type=["all files","txt", "pdf"])
+        file = st.file_uploader("Upload file to decrypt:", type=["txt", "pdf"])
         if file is not None:
             encrypted_content = read_file_content(file)
             decrypted_file = symmetric_file_decrypt(encrypted_content, symmetric_key)
             if decrypted_file is not None:
                 st.write("File Decrypted Successfully!")
                 # Download decrypted file
-                st.download_button(label="Download Decrypted File", data=decrypted_file, file_name="decrypted_file.txt", mime="text/plain")
+                decrypted_filename = f"decrypted_{file.name}" if file.name else "decrypted_file.txt"
+                st.download_button(label="Download Decrypted File", data=decrypted_file, file_name=decrypted_filename, mime="text/plain")
 
     elif options == "Asymmetric Encryption (Text)":
         text = st.text_area("Enter text to encrypt:")
