@@ -3,7 +3,7 @@ import hashlib
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import padding, hashes
+from cryptography.hazmat.primitives import padding
 import base64
 
 # Generate a symmetric key
@@ -44,7 +44,11 @@ def symmetric_file_decrypt(encrypted_file, key):
 def asymmetric_text_encrypt(plaintext, public_key):
     cipher_text = public_key.encrypt(
         plaintext.encode(),
-        padding.PKCS1v15()
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
     )
     return base64.b64encode(cipher_text).decode()
 
@@ -54,7 +58,11 @@ def asymmetric_text_decrypt(ciphertext, private_key):
         ciphertext_bytes = base64.b64decode(ciphertext.encode())
         plaintext = private_key.decrypt(
             ciphertext_bytes,
-            padding.PKCS1v15()
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
         ).decode()
         return plaintext
     except Exception as e:
