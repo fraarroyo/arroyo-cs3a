@@ -51,17 +51,14 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
 # RSA Asymmetric Encryption
 def rsa_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
-    if not key:
-        key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-        public_key = key.public_key()
-        st.write("Generated RSA Public Key:", public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo))
-        st.write("Generated RSA Secret Key:", key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
     if if_decrypt:
-        private_key = serialization.load_pem_private_key(key, password=None)
-        decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+        # Load private key for decryption
+        private_key = serialization.load_pem_private_key(key.encode(), password=None)
+        decrypted_text = private_key.decrypt(base64.b64decode(text), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return decrypted_text.decode(), None, None
     else:
-        public_key = serialization.load_pem_public_key(key)
+        # Load public key for encryption
+        public_key = serialization.load_pem_public_key(key.encode())
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return base64.b64encode(encrypted_text).decode(), None, key
 
@@ -91,8 +88,12 @@ if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asym
     if selected_crypto == "Fernet Symmetric Encryption":
         key = st.text_input("Enter Encryption Key")
     elif selected_crypto == "RSA Asymmetric Encryption":
-        key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
-    if_decrypt = st.checkbox("Decrypt")
+        if_decrypt = st.checkbox("Decrypt")
+        if if_decrypt:
+            # If decrypting, we need the private key
+            key = st.text_area("Enter Private Key (Decryption)")
+        else:
+            key = st.text_area("Enter Public Key (Encryption)")
 
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
     text = st.text_area("Enter Text")
