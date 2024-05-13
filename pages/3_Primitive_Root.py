@@ -36,25 +36,28 @@ def caesar_cipher(text, shift_key, if_decrypt):
     return result
 
 # Fernet Symmetric Encryption
-def fernet_encrypt_decrypt(text, key, if_decrypt):
-    """Encrypts or decrypts text using the Fernet symmetric encryption."""
+def fernet_encrypt(text, key):
+    """Encrypts text using the Fernet symmetric encryption."""
     fernet = Fernet(key)
-    if if_decrypt:
-        return fernet.decrypt(text.encode()).decode()
-    else:
-        return fernet.encrypt(text.encode()).decode()
+    return fernet.encrypt(text.encode()).decode()
+
+def fernet_decrypt(text, key):
+    """Decrypts text using the Fernet symmetric encryption."""
+    fernet = Fernet(key)
+    return fernet.decrypt(text.encode()).decode()
 
 # RSA Asymmetric Encryption
-def rsa_encrypt_decrypt(text, key, if_decrypt):
-    """Encrypts or decrypts text using RSA asymmetric encryption."""
-    if if_decrypt:
-        private_key = serialization.load_pem_private_key(key.encode(), password=None)
-        decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return decrypted_text.decode()
-    else:
-        public_key = serialization.load_pem_public_key(key.encode())
-        encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return base64.b64encode(encrypted_text).decode()
+def rsa_encrypt(text, key):
+    """Encrypts text using RSA asymmetric encryption."""
+    public_key = serialization.load_pem_public_key(key.encode())
+    encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+    return base64.b64encode(encrypted_text).decode()
+
+def rsa_decrypt(text, key):
+    """Decrypts text using RSA asymmetric encryption."""
+    private_key = serialization.load_pem_private_key(key.encode(), password=None)
+    decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+    return decrypted_text.decode()
 
 # Hashing Functions
 def hash_text(text, algorithm):
@@ -75,10 +78,21 @@ if selected_crypto in descriptions:
     st.sidebar.subheader(selected_crypto)
     st.sidebar.write(descriptions[selected_crypto])
 
+text_input = st.text_area("Enter Text")
+file_input = st.file_uploader("Choose a file")
+
 if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption"]:
-    text = st.text_area("Enter Text")
-    if selected_crypto == "RSA Asymmetric Encryption":
-        key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
+    if text_input:
+        text = text_input
+        if selected_crypto == "RSA Asymmetric Encryption":
+            key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
+    else:
+        text = ""
+    if file_input:
+        file_contents = file_input.getvalue().decode("utf-8")
+        text = file_contents
+        if selected_crypto == "RSA Asymmetric Encryption":
+            key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
 
 if selected_crypto == "Fernet Symmetric Encryption":
     st.subheader("Fernet Symmetric Encryption")
@@ -86,28 +100,37 @@ if selected_crypto == "Fernet Symmetric Encryption":
     st.write("Here is the generated secret key:")
     generated_key = Fernet.generate_key()
     st.write(generated_key.decode())
-    text = st.text_area("Enter Text")
-    key = st.text_input("Enter Encryption Key (Use the generated key)")
+    if text_input:
+        text = text_input
+        key = st.text_input("Enter Encryption Key (Use the generated key)")
+    elif file_input:
+        file_contents = file_input.getvalue().decode("utf-8")
+        text = file_contents
+        key = st.text_input("Enter Encryption Key (Use the generated key)")
 
 if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption", "Fernet Symmetric Encryption"]:
     if_decrypt = st.checkbox("Decrypt")
 
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
-    text = st.text_area("Enter Text")
-
-uploaded_file = st.file_uploader("Choose a file")
-
-if st.button("Submit"):
-    if uploaded_file is not None:
-        file_contents = uploaded_file.getvalue().decode("utf-8")
+    if text_input:
+        text = text_input
+    elif file_input:
+        file_contents = file_input.getvalue().decode("utf-8")
         text = file_contents
 
+if st.button("Submit"):
     if selected_crypto == "Caesar Cipher":
         processed_text = caesar_cipher(text, shift_key, if_decrypt)
     elif selected_crypto == "Fernet Symmetric Encryption":
-        processed_text = fernet_encrypt_decrypt(text, key, if_decrypt)
+        if if_decrypt:
+            processed_text = fernet_decrypt(text, key)
+        else:
+            processed_text = fernet_encrypt(text, key)
     elif selected_crypto == "RSA Asymmetric Encryption":
-        processed_text = rsa_encrypt_decrypt(text, key, if_decrypt)
+        if if_decrypt:
+            processed_text = rsa_decrypt(text, key)
+        else:
+            processed_text = rsa_encrypt(text, key)
     elif selected_crypto == "SHA-1 Hashing":
         processed_text = sha1_hash(text)
     elif selected_crypto == "SHA-256 Hashing":
