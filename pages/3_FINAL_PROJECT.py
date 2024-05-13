@@ -64,30 +64,17 @@ def rsa_encrypt_decrypt(text, key, if_decrypt, mgf_algorithm=None, hash_algorith
         st.write("Generated RSA Secret Key:")
         st.code(private_key_pem.decode())
     if if_decrypt:
-        try:
-            private_key = serialization.load_pem_private_key(
-                key.encode(),
-                password=None,
-                backend=default_backend()
+        private_key = serialization.load_pem_private_key(key.encode(), password=None)
+        decrypted_text = private_key.decrypt(
+            base64.b64decode(text),
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
             )
-            st.write("Private Key Loaded Successfully:", private_key)  # Debugging
-            st.write("Ciphertext:", text)  # Debugging
-            if mgf_algorithm is None:
-                mgf_algorithm = padding.MGF1(algorithm=hashes.SHA256())
-            if hash_algorithm is None:
-                hash_algorithm = hashes.SHA256()
-            decrypted_text = private_key.decrypt(
-                base64.b64decode(text),
-                padding.OAEP(
-                    mgf=mgf_algorithm,
-                    algorithm=hash_algorithm,
-                    label=None
-                )
-            ).decode()
-            return decrypted_text, None, None
-        except Exception as e:
-            st.write("Error during decryption:", e)
-            return "Decryption Error", None, None
+        ).decode()
+        return decrypted_text, None, None
+
     else:
         if isinstance(key, str):
             key = key.encode()
