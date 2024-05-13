@@ -20,47 +20,20 @@ descriptions = {
     "MD5 Hashing": "MD5 is a widely used cryptographic hash function that produces a 128-bit (16-byte) hash value. It is commonly used for checksums and data integrity verification."
 }
 
-# Caesar Cipher
-def caesar_cipher(text, shift_key, if_decrypt):
-    """Encrypts or decrypts text using the Caesar Cipher."""
-    result = ""
-    for char in text:
-        if 32 <= ord(char) <= 125:
-            shift = shift_key if not if_decrypt else -shift_key
-            new_ascii = ord(char) + shift
-            while new_ascii > 125:
-                new_ascii -= 94
-            while new_ascii < 32:
-                new_ascii += 94
-            result += chr(new_ascii)
-        else:
-            result += char
-    return result, None, None  # Caesar Cipher doesn't generate keys
-
-# Fernet Symmetric Encryption
-def fernet_encrypt_decrypt(text, key, if_decrypt):
-    """Encrypts or decrypts text using the Fernet symmetric encryption."""
-    if not key:
-        key = Fernet.generate_key()
-        st.write("Generated Fernet Secret Key:", key.decode())
-    fernet = Fernet(key)
-    if if_decrypt:
-        return fernet.decrypt(text.encode()).decode(), None, None
-    else:
-        return fernet.encrypt(text.encode()).decode(), key.decode(), None
-
-# RSA Asymmetric Encryption
-def generate_rsa_public_key():
-    """Generates RSA public key."""
+# Function to generate RSA keys
+def generate_rsa_keys():
+    """Generates RSA public and private keys."""
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     public_key = private_key.public_key()
-    return public_key
+    return private_key, public_key
 
+# Function to encrypt or decrypt using RSA
 def rsa_encrypt_decrypt(text, if_decrypt, public_key=None):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if not public_key:
-        public_key = generate_rsa_public_key()
+        private_key, public_key = generate_rsa_keys()
         st.write("Generated RSA Public Key:", public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode())
+        st.write("Generated RSA Private Key:", private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption()).decode())
     if if_decrypt:
         st.error("RSA encryption with only public key is not supported for decryption.")
         return None, None, None
@@ -75,16 +48,6 @@ def rsa_encrypt_decrypt(text, if_decrypt, public_key=None):
         )
         return base64.b64encode(encrypted_text).decode(), public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode(), None
 
-# Hashing Functions
-def hash_text(text, algorithm):
-    """Hashes the text using the specified algorithm."""
-    return hashlib.new(algorithm, text.encode()).hexdigest()
-
-# SHA-1 Hashing
-def sha1_hash(text):
-    """Hashes the text using SHA-1."""
-    return hashlib.sha1(text.encode()).hexdigest()
-
 # Streamlit UI setup
 crypto_options = ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption", 
                   "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]
@@ -94,34 +57,33 @@ if selected_crypto in descriptions:
     st.sidebar.subheader(selected_crypto)
     st.sidebar.write(descriptions[selected_crypto])
 
+# Display keys at the top
+if selected_crypto == "RSA Asymmetric Encryption":
+    st.write("RSA Keys:")
+    private_key_display = st.empty()
+    public_key_display = st.empty()
+    private_key, public_key = generate_rsa_keys()
+    private_key_display.text_area("Private Key", value=private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption()).decode(), height=150)
+    public_key_display.text_area("Public Key", value=public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode(), height=150)
+
+# Input fields based on selected crypto
 if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption"]:
     text = st.text_area("Enter Text")
-    if selected_crypto == "Caesar Cipher":
-        shift_key = st.number_input("Shift Key (Caesar Cipher)", min_value=1, max_value=25, step=1, value=3)
     if selected_crypto == "Fernet Symmetric Encryption":
         key = st.text_input("Enter Encryption Key")
-    elif selected_crypto == "RSA Asymmetric Encryption":
-        public_key = st.text_area("Public Key")
-        st.write("Generated RSA Public Key:", generate_rsa_public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode())
-    if_decrypt = st.checkbox("Decrypt")
+    if selected_crypto == "RSA Asymmetric Encryption":
+        if_decrypt = st.checkbox("Decrypt")
 
+# Text area for hash functions
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
     text = st.text_area("Enter Text")
 
+# Perform operation on button click
 if st.button("Submit"):
-    if selected_crypto == "Caesar Cipher":
-        processed_text, _, _ = caesar_cipher(text, shift_key, if_decrypt)
-    elif selected_crypto == "Fernet Symmetric Encryption":
-        processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
-    elif selected_crypto == "RSA Asymmetric Encryption":
+    if selected_crypto == "RSA Asymmetric Encryption":
         processed_text, _, _ = rsa_encrypt_decrypt(text, if_decrypt, public_key)
-    elif selected_crypto == "SHA-1 Hashing":
-        processed_text = sha1_hash(text)
-    elif selected_crypto == "SHA-256 Hashing":
-        processed_text = hash_text(text, "sha256")
-    elif selected_crypto == "SHA-512 Hashing":
-        processed_text = hash_text(text, "sha512")
-    elif selected_crypto == "MD5 Hashing":
-        processed_text = hash_text(text, "md5")
+    # Add cases for other cryptographic techniques
+    else:
+        processed_text = "Not implemented yet"
 
     st.write("Processed Text:", processed_text)
