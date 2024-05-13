@@ -1,7 +1,7 @@
 import streamlit as st
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 import hashlib
 import base64
 
@@ -36,13 +36,22 @@ def caesar_cipher(text, shift_key, if_decrypt):
     return result
 
 # Fernet Symmetric Encryption
-def fernet_encrypt_decrypt(text, key, if_decrypt):
+def fernet_encrypt_decrypt_text(text, key, if_decrypt):
     """Encrypts or decrypts text using the Fernet symmetric encryption."""
     fernet = Fernet(key)
     if if_decrypt:
         return fernet.decrypt(text.encode()).decode()
     else:
         return fernet.encrypt(text.encode()).decode()
+
+# Fernet Symmetric Encryption for file
+def fernet_encrypt_decrypt_file(file_content, key, if_decrypt):
+    """Encrypts or decrypts file content using the Fernet symmetric encryption."""
+    fernet = Fernet(key)
+    if if_decrypt:
+        return fernet.decrypt(file_content)
+    else:
+        return fernet.encrypt(file_content)
 
 # RSA Asymmetric Encryption
 def rsa_encrypt_decrypt(text, key, if_decrypt):
@@ -101,9 +110,10 @@ if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "M
 
 if st.button("Submit"):
     if selected_crypto == "Caesar Cipher":
+        shift_key = st.number_input("Enter Shift Key", value=1)
         processed_text = caesar_cipher(text, shift_key, if_decrypt)
     elif selected_crypto == "Fernet Symmetric Encryption":
-        processed_text = fernet_encrypt_decrypt(text, key, if_decrypt)
+        processed_text = fernet_encrypt_decrypt_text(text, key, if_decrypt)
     elif selected_crypto == "RSA Asymmetric Encryption":
         processed_text = rsa_encrypt_decrypt(text, key, if_decrypt)
     elif selected_crypto == "SHA-1 Hashing":
