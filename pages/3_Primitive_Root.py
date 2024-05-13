@@ -66,10 +66,6 @@ def sha1_hash(text):
     """Hashes the text using SHA-1."""
     return hashlib.sha1(text.encode()).hexdigest()
 
-# Function to generate a Fernet key
-def generate_fernet_key():
-    return Fernet.generate_key()
-
 # Streamlit UI setup
 crypto_options = ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption", 
                   "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]
@@ -88,7 +84,7 @@ if selected_crypto == "Fernet Symmetric Encryption":
     st.subheader("Fernet Symmetric Encryption")
     st.write("To encrypt or decrypt using Fernet Symmetric Encryption, you need to provide a secret key.")
     st.write("Here is the generated secret key:")
-    generated_key = generate_fernet_key()
+    generated_key = Fernet.generate_key()
     st.write(generated_key.decode())
     text = st.text_area("Enter Text")
     key = st.text_input("Enter Encryption Key (Use the generated key)")
