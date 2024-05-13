@@ -49,7 +49,6 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     else:
         return fernet.encrypt(text.encode()).decode(), key, None
 
-# RSA Asymmetric Encryption
 def rsa_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if not key:
@@ -65,22 +64,24 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
         st.write("Generated RSA Secret Key:")
         st.code(private_key_pem.decode())
     if if_decrypt:
-        private_key = serialization.load_pem_private_key(
-            key.encode(),
-            password=None,
-            backend=default_backend()
-        )
-        decrypted_text = private_key.decrypt(
-            base64.b64decode(text),
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
+        try:
+            private_key = serialization.load_pem_private_key(
+                key.encode(),
+                password=None,
+                backend=default_backend()
             )
-        ).decode()
-        return decrypted_text, None, None
-
-
+            decrypted_text = private_key.decrypt(
+                base64.b64decode(text),
+                padding.OAEP(
+                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None
+                )
+            ).decode()
+            return decrypted_text, None, None
+        except Exception as e:
+            st.write("Error during decryption:", e)
+            return "Decryption Error", None, None
     else:
         if isinstance(key, str):
             key = key.encode()
