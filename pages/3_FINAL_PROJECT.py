@@ -49,7 +49,7 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     else:
         return fernet.encrypt(text.encode()).decode(), key, None
 
-def rsa_encrypt_decrypt(text, key, if_decrypt):
+def rsa_encrypt_decrypt(text, key, if_decrypt, mgf_algorithm=None, hash_algorithm=None):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if not key:
         key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -71,11 +71,16 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
                 backend=default_backend()
             )
             st.write("Private Key Loaded Successfully:", private_key)  # Debugging
+            st.write("Ciphertext:", text)  # Debugging
+            if mgf_algorithm is None:
+                mgf_algorithm = padding.MGF1(algorithm=hashes.SHA256())
+            if hash_algorithm is None:
+                hash_algorithm = hashes.SHA256()
             decrypted_text = private_key.decrypt(
                 base64.b64decode(text),
                 padding.OAEP(
-                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                    algorithm=hashes.SHA256(),
+                    mgf=mgf_algorithm,
+                    algorithm=hash_algorithm,
                     label=None
                 )
             ).decode()
@@ -89,6 +94,7 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
         public_key = serialization.load_pem_public_key(key)
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return base64.b64encode(encrypted_text).decode(), None, key
+
 
 
 # Hashing Functions
@@ -129,7 +135,7 @@ if st.button("Submit"):
     elif selected_crypto == "Fernet Symmetric Encryption":
         processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
     elif selected_crypto == "RSA Asymmetric Encryption":
-        processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt)
+        processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt, mgf_algorithm=hashes.SHA256(), hash_algorithm=hashes.SHA256())
     elif selected_crypto == "SHA-1 Hashing":
         processed_text = sha1_hash(text)
     elif selected_crypto == "SHA-256 Hashing":
