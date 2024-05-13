@@ -37,7 +37,7 @@ def caesar_cipher(text, shift_key, if_decrypt):
             result += char
     return result, None, None  # Caesar Cipher doesn't generate keys
 
-# Fernet Symmetric Encryption
+# Fernet Symmetric Encryption for Text
 def fernet_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using the Fernet symmetric encryption."""
     if not key:
@@ -49,20 +49,7 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     else:
         return fernet.encrypt(text.encode()).decode(), key, None
 
-# Fernet Symmetric Encryption for Files
-def fernet_file_encrypt_decrypt(file_contents, key, if_decrypt):
-    """Encrypts or decrypts file contents using the Fernet symmetric encryption."""
-    if not key:
-        key = Fernet.generate_key()
-        st.write("Generated Fernet Secret Key:", key)
-    fernet = Fernet(key)
-    if if_decrypt:
-        decrypted_contents = fernet.decrypt(file_contents)
-        return decrypted_contents, None
-    else:
-        encrypted_contents = fernet.encrypt(file_contents)
-        return encrypted_contents, key
-
+# RSA Asymmetric Encryption for Text
 def rsa_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if not key:
@@ -103,6 +90,19 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return base64.b64encode(encrypted_text).decode(), None, key
 
+# Fernet Symmetric Encryption for Files
+def fernet_file_encrypt_decrypt(file_contents, key, if_decrypt):
+    """Encrypts or decrypts file contents using the Fernet symmetric encryption."""
+    if not key:
+        key = Fernet.generate_key()
+        st.write("Generated Fernet Secret Key:", key)
+    fernet = Fernet(key)
+    if if_decrypt:
+        decrypted_contents = fernet.decrypt(file_contents)
+        return decrypted_contents, None
+    else:
+        encrypted_contents = fernet.encrypt(file_contents)
+        return encrypted_contents, key
 
 # Hashing Functions
 def hash_text(text, algorithm):
