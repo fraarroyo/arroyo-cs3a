@@ -102,13 +102,14 @@ if selected_crypto.startswith("Fernet Symmetric Encryption"):
         generated_key = generate_fernet_key()
         st.write("Generated Secret Key for Encryption:", generated_key.decode())
     else:
-        generated_key = None
-
+        generated_key = st.text_input("Enter Secret Key for Decryption")
+        
 if selected_crypto.startswith("RSA Asymmetric Encryption"):
     text = st.text_area("Enter Text")
-    key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
-    if_decrypt = selected_crypto.endswith("(Decrypt)")
-
+    if_decrypt = selected_crypto.endswith("Decryption")
+    key_label = "Public Key (Encryption)" if not if_decrypt else "Private Key (Decryption)"
+    key = st.text_area(f"Enter {key_label}")
+    
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
     text = st.text_area("Enter Text")
 
@@ -124,6 +125,7 @@ if st.button("Submit"):
         else:
             st.error("Please generate a key for encryption.")
     elif selected_crypto.startswith("RSA Asymmetric Encryption"):
+        if_decrypt = selected_crypto.endswith("(Decryption)")
         if if_decrypt:
             processed_text = rsa_decrypt(text, key)
         else:
