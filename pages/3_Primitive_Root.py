@@ -42,7 +42,7 @@ def fernet_encrypt_decrypt_text(text, key, if_decrypt):
     if if_decrypt:
         return fernet.decrypt(text.encode()).decode(), key
     else:
-        return fernet.encrypt(text.encode()).decode(), None
+        return fernet.encrypt(text.encode()).decode(), fernet.key
 
 # RSA Asymmetric Encryption for text
 def rsa_encrypt_decrypt_text(text, key, if_decrypt):
@@ -96,6 +96,8 @@ if selected_crypto == "Text Encryption / Decryption":
             processed_text, decryption_key = fernet_encrypt_decrypt_text(text, key, if_decrypt)
             if if_decrypt:
                 st.write("Decryption Key:", decryption_key)
+            else:
+                st.write("Generated Secret Key:", decryption_key.decode())
             st.write("Processed Text:", processed_text)
         elif selected_algorithm == "RSA Asymmetric Encryption":
             processed_text, decryption_key = rsa_encrypt_decrypt_text(text, key, if_decrypt)
