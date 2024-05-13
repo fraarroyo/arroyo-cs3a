@@ -97,12 +97,11 @@ if selected_crypto == "Caesar Cipher":
 
 if selected_crypto.startswith("Fernet Symmetric Encryption"):
     text = st.text_area("Enter Text")
-    generate_key = selected_crypto.endswith("(Encrypt)")
-    if generate_key:
-        generated_key = generate_fernet_key()
-        st.write("Generated Secret Key for Encryption:", generated_key.decode())
+    if_decrypt = selected_crypto.endswith("(Decrypt)")
+    if not if_decrypt:
+        generated_key = st.text_input("Enter Secret Key for Encryption")
     else:
-        generated_key = None
+        generated_key = st.text_input("Enter Secret Key for Decryption")
 
 if selected_crypto.startswith("RSA Asymmetric Encryption"):
     text = st.text_area("Enter Text")
@@ -122,7 +121,7 @@ if st.button("Submit"):
             else:
                 processed_text = fernet_encrypt(text, generated_key)
         else:
-            st.error("Please generate a key for encryption.")
+            st.error("Please enter a secret key.")
     elif selected_crypto.startswith("RSA Asymmetric Encryption"):
         if if_decrypt:
             processed_text = rsa_decrypt(text, key)
