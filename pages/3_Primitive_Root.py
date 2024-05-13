@@ -1,7 +1,7 @@
 import streamlit as st
 from cryptography.fernet import Fernet, InvalidToken
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
 import hashlib
 import base64
 
@@ -49,17 +49,17 @@ def fernet_decrypt(text, key):
         st.error("Invalid token. Failed to decrypt the data.")
         return None
 
-# RSA Asymmetric Encryption
-def rsa_encrypt_decrypt(text, key, if_decrypt):
-    """Encrypts or decrypts text using RSA asymmetric encryption."""
-    if if_decrypt:
-        private_key = serialization.load_pem_private_key(key.encode(), password=None)
-        decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return decrypted_text.decode()
-    else:
-        public_key = serialization.load_pem_public_key(key.encode())
-        encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return base64.b64encode(encrypted_text).decode()
+# RSA Asymmetric Encryption - Encryption
+def rsa_encrypt(text, key):
+    public_key = serialization.load_pem_public_key(key.encode())
+    encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+    return base64.b64encode(encrypted_text).decode()
+
+# RSA Asymmetric Encryption - Decryption
+def rsa_decrypt(text, key):
+    private_key = serialization.load_pem_private_key(key.encode(), password=None)
+    decrypted_text = private_key.decrypt(base64.b64decode(text), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+    return decrypted_text.decode()
 
 # Hashing Functions
 def hash_text(text, algorithm):
@@ -122,7 +122,10 @@ if st.button("Submit"):
         else:
             processed_text = fernet_decrypt(text_decrypt, key_decrypt)
     elif selected_crypto == "RSA Asymmetric Encryption":
-        processed_text = rsa_encrypt_decrypt(text, key, if_decrypt)
+        if if_decrypt:
+            processed_text = rsa_decrypt(text, key)
+        else:
+            processed_text = rsa_encrypt(text, key)
     elif selected_crypto == "SHA-1 Hashing":
         processed_text = sha1_hash(text)
     elif selected_crypto == "SHA-256 Hashing":
