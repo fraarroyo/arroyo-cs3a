@@ -95,8 +95,6 @@ def rsa_encrypt_decrypt(text, key, if_decrypt, mgf_algorithm=None, hash_algorith
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return base64.b64encode(encrypted_text).decode(), None, key
 
-
-
 # Hashing Functions
 def hash_text(text, algorithm):
     """Hashes the text using the specified algorithm."""
