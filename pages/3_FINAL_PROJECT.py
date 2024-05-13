@@ -66,7 +66,7 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
 
     if if_decrypt:
         private_key = serialization.load_pem_private_key(key.encode(), password=None)
-        decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+        decrypted_text = private_key.decrypt(base64.b64decode(text), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return decrypted_text.decode(), None, None
     else:
         if isinstance(key, str):
