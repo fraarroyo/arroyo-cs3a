@@ -40,9 +40,9 @@ def fernet_encrypt_decrypt_text(text, key, if_decrypt):
     """Encrypts or decrypts text using the Fernet symmetric encryption."""
     fernet = Fernet(key)
     if if_decrypt:
-        return fernet.decrypt(text.encode()).decode(), key
+        return fernet.decrypt(text.encode()).decode()
     else:
-        return fernet.encrypt(text.encode()).decode(), fernet.key
+        return fernet.encrypt(text.encode()).decode()
 
 # RSA Asymmetric Encryption for text
 def rsa_encrypt_decrypt_text(text, key, if_decrypt):
@@ -50,11 +50,11 @@ def rsa_encrypt_decrypt_text(text, key, if_decrypt):
     if if_decrypt:
         private_key = serialization.load_pem_private_key(key.encode(), password=None)
         decrypted_text = private_key.decrypt(base64.b64decode(text), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return decrypted_text.decode(), key
+        return decrypted_text.decode()
     else:
         public_key = serialization.load_pem_public_key(key.encode())
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return base64.b64encode(encrypted_text).decode(), None
+        return base64.b64encode(encrypted_text).decode()
 
 # Hashing Functions
 def hash_text(text, algorithm):
@@ -86,21 +86,53 @@ if selected_crypto == "Text Encryption / Decryption":
         if selected_algorithm == "Caesar Cipher":
             shift_key = st.number_input("Enter Shift Key", value=1)
             processed_text = caesar_cipher(text, shift_key, if_decrypt)
-            st.write("Processed Text:", processed_text)
         elif selected_algorithm == "Fernet Symmetric Encryption":
             if if_decrypt:
-                key = st.text_input("Enter Encryption Key")
+                key = st.text_input("Enter Encryption Key (Use the generated key)")
             else:
                 generated_key = generate_fernet_key()
                 key = generated_key.decode()
-            processed_text, decryption_key = fernet_encrypt_decrypt_text(text, key, if_decrypt)
-            if if_decrypt:
-                st.write("Decryption Key:", decryption_key)
-            else:
-                st.write("Generated Secret Key:", decryption_key.decode())
-            st.write("Processed Text:", processed_text)
+            processed_text = fernet_encrypt_decrypt_text(text, key, if_decrypt)
         elif selected_algorithm == "RSA Asymmetric Encryption":
-            processed_text, decryption_key = rsa_encrypt_decrypt_text(text, key, if_decrypt)
+            processed_text = rsa_encrypt_decrypt_text(text, key, if_decrypt)
+
+        st.write("Processed Text:", processed_text)
+
+elif selected_crypto == "File Encryption / Decryption":
+    st.subheader("File Encryption and Decryption")
+    file = st.file_uploader("Upload File")
+
+    selected_algorithm = st.selectbox("Select Encryption Algorithm", ["Fernet Symmetric Encryption"])
+    if_decrypt = st.checkbox("Decrypt")
+
+    if st.button("Submit") and file:
+        file_content = file.read()
+        if selected_algorithm == "Fernet Symmetric Encryption":
             if if_decrypt:
-                st.write("Decryption Key:", decryption_key)
-            st.write("Processed Text:", processed_text)
+                key = st.text_input("Enter Encryption Key (Use the generated key)")
+            else:
+                generated_key = generate_fernet_key()
+                key = generated_key.decode()
+            fernet = Fernet(key)
+            if if_decrypt:
+                processed_file_content = fernet.decrypt(file_content)
+            else:
+                processed_file_content = fernet.encrypt(file_content)
+            st.write("Processed File Content:", processed_file_content.decode())
+
+elif selected_crypto == "Hashing":
+    st.subheader("Hashing")
+    text = st.text_area("Enter Text")
+    selected_algorithm = st.selectbox("Select Hashing Algorithm", ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"])
+
+    if st.button("Submit"):
+        if selected_algorithm == "SHA-1 Hashing":
+            processed_text = sha1_hash(text)
+        elif selected_algorithm == "SHA-256 Hashing":
+            processed_text = hash_text(text, "sha256")
+        elif selected_algorithm == "SHA-512 Hashing":
+            processed_text = hash_text(text, "sha512")
+        elif selected_algorithm == "MD5 Hashing":
+            processed_text = hash_text(text, "md5")
+
+        st.write("Hashed Text:", processed_text)
