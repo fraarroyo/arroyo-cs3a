@@ -44,15 +44,6 @@ def fernet_encrypt_decrypt_text(text, key, if_decrypt):
     else:
         return fernet.encrypt(text.encode()).decode()
 
-# Fernet Symmetric Encryption for file
-def fernet_encrypt_decrypt_file(file_content, key, if_decrypt):
-    """Encrypts or decrypts file content using the Fernet symmetric encryption."""
-    fernet = Fernet(key)
-    if if_decrypt:
-        return fernet.decrypt(file_content)
-    else:
-        return fernet.encrypt(file_content)
-
 # RSA Asymmetric Encryption for text
 def rsa_encrypt_decrypt_text(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
@@ -108,21 +99,14 @@ elif selected_crypto == "File Encryption / Decryption":
     file = st.file_uploader("Upload File")
 
     selected_algorithm = st.selectbox("Select Encryption Algorithm", ["Fernet Symmetric Encryption"])
-    encrypt_option = st.checkbox("Encrypt")
-    decrypt_option = st.checkbox("Decrypt")
+    if_decrypt = st.checkbox("Decrypt")
 
     if st.button("Submit") and file:
         file_content = file.read()
-        if encrypt_option:
+        if selected_algorithm == "Fernet Symmetric Encryption":
             generated_key = generate_fernet_key()
-            processed_file_content = fernet_encrypt_decrypt_file(file_content, generated_key.decode(), if_decrypt=False)
-            st.write("Encrypted File Content:", processed_file_content.decode())
-            st.download_button("Download Encrypted File", processed_file_content, file_name="encrypted_file.txt", mime="text/plain")
-        elif decrypt_option:
-            key = st.text_input("Enter Decryption Key")
-            processed_file_content = fernet_encrypt_decrypt_file(file_content, key, if_decrypt=True)
-            st.write("Decrypted File Content:", processed_file_content.decode())
-            st.download_button("Download Decrypted File", processed_file_content, file_name="decrypted_file.txt", mime="text/plain")
+            processed_file_content = fernet_encrypt_decrypt_file(file_content, generated_key.decode(), if_decrypt)
+            st.write("Processed File Content:", processed_file_content.decode())
 
 elif selected_crypto == "Hashing":
     st.subheader("Hashing")
