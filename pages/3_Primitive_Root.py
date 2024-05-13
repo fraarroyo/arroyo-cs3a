@@ -88,6 +88,8 @@ if selected_crypto in descriptions:
     st.sidebar.subheader(selected_crypto)
     st.sidebar.write(descriptions[selected_crypto])
 
+file = st.file_uploader("Upload File")
+
 if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption"]:
     text = st.text_area("Enter Text")
     if selected_crypto == "RSA Asymmetric Encryption":
@@ -109,20 +111,35 @@ if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "M
     text = st.text_area("Enter Text")
 
 if st.button("Submit"):
+    if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption"]:
+        if file:
+            file_content = file.read()
+        else:
+            file_content = None
+
     if selected_crypto == "Caesar Cipher":
         shift_key = st.number_input("Enter Shift Key", value=1)
         processed_text = caesar_cipher(text, shift_key, if_decrypt)
+        processed_file_content = caesar_cipher(file_content.decode(), shift_key, if_decrypt) if file_content else None
     elif selected_crypto == "Fernet Symmetric Encryption":
         processed_text = fernet_encrypt_decrypt_text(text, key, if_decrypt)
+        processed_file_content = fernet_encrypt_decrypt_file(file_content, key, if_decrypt) if file_content else None
     elif selected_crypto == "RSA Asymmetric Encryption":
         processed_text = rsa_encrypt_decrypt(text, key, if_decrypt)
+        processed_file_content = None  # RSA doesn't directly support file encryption/decryption
     elif selected_crypto == "SHA-1 Hashing":
         processed_text = sha1_hash(text)
+        processed_file_content = None
     elif selected_crypto == "SHA-256 Hashing":
         processed_text = hash_text(text, "sha256")
+        processed_file_content = None
     elif selected_crypto == "SHA-512 Hashing":
         processed_text = hash_text(text, "sha512")
+        processed_file_content = None
     elif selected_crypto == "MD5 Hashing":
         processed_text = hash_text(text, "md5")
+        processed_file_content = None
 
     st.write("Processed Text:", processed_text)
+    if file_content and processed_file_content:
+        st.write("Processed File Content:", processed_file_content.decode())
