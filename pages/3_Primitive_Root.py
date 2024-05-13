@@ -2,7 +2,6 @@ import streamlit as st
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives import hashes
 import hashlib
 import base64
 import os
@@ -42,38 +41,28 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using the Fernet symmetric encryption."""
     if not key:
         key = Fernet.generate_key()
-        st.write("Generated Fernet Secret Key:", key.decode())
+        st.write("Generated Fernet Secret Key:", key)
     fernet = Fernet(key)
     if if_decrypt:
         return fernet.decrypt(text.encode()).decode(), None, None
     else:
-        return fernet.encrypt(text.encode()).decode(), key.decode(), None
+        return fernet.encrypt(text.encode()).decode(), key, None
 
 # RSA Asymmetric Encryption
-def generate_rsa_public_key():
-    """Generates RSA public key."""
-    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    public_key = private_key.public_key()
-    return public_key
-
-def rsa_encrypt_decrypt(text, if_decrypt, public_key=None):
+def rsa_encrypt_decrypt(text, if_decrypt, public_key=None, private_key=None):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
-    if not public_key:
-        public_key = generate_rsa_public_key()
-        st.write("Generated RSA Public Key:", public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode())
+    if not public_key and not private_key:
+        private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        public_key = private_key.public_key()
+        st.write("Generated RSA Public Key:", public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo))
+        st.write("Generated RSA Secret Key:", private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
     if if_decrypt:
-        st.error("RSA encryption with only public key is not supported for decryption.")
-        return None, None, None
+        private_key = serialization.load_pem_private_key(private_key.encode(), password=None)
+        decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+        return decrypted_text.decode(), public_key, private_key
     else:
-        encrypted_text = public_key.encrypt(
-            text.encode(),
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
-        )
-        return base64.b64encode(encrypted_text).decode(), public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode(), None
+        encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+        return base64.b64encode(encrypted_text).decode(), public_key, private_key
 
 # Hashing Functions
 def hash_text(text, algorithm):
@@ -101,8 +90,8 @@ if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asym
     if selected_crypto == "Fernet Symmetric Encryption":
         key = st.text_input("Enter Encryption Key")
     elif selected_crypto == "RSA Asymmetric Encryption":
-        public_key = st.text_area("Public Key")
-        st.write("Generated RSA Public Key:", generate_rsa_public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode())
+        public_key = st.text_area("Enter Public Key (Encryption)")
+        private_key = st.text_area("Enter Private Key (Decryption)")
     if_decrypt = st.checkbox("Decrypt")
 
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
@@ -114,7 +103,7 @@ if st.button("Submit"):
     elif selected_crypto == "Fernet Symmetric Encryption":
         processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
     elif selected_crypto == "RSA Asymmetric Encryption":
-        processed_text, _, _ = rsa_encrypt_decrypt(text, if_decrypt, public_key)
+        processed_text, _, _ = rsa_encrypt_decrypt(text, if_decrypt, public_key, private_key)
     elif selected_crypto == "SHA-1 Hashing":
         processed_text = sha1_hash(text)
     elif selected_crypto == "SHA-256 Hashing":
