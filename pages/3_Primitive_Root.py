@@ -1,9 +1,10 @@
 import streamlit as st
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 import hashlib
 import base64
+import os
 
 st.title("Applied Cryptography Application")
 
@@ -66,10 +67,6 @@ def sha1_hash(text):
     """Hashes the text using SHA-1."""
     return hashlib.sha1(text.encode()).hexdigest()
 
-# Function to generate a Fernet key
-def generate_fernet_key():
-    return Fernet.generate_key()
-
 # Streamlit UI setup
 crypto_options = ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption", 
                   "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]
@@ -79,21 +76,13 @@ if selected_crypto in descriptions:
     st.sidebar.subheader(selected_crypto)
     st.sidebar.write(descriptions[selected_crypto])
 
-if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption"]:
+if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption"]:
     text = st.text_area("Enter Text")
-    if selected_crypto == "RSA Asymmetric Encryption":
+    if selected_crypto == "Fernet Symmetric Encryption":
+        key = st.text_input("Enter Encryption Key")
+    elif selected_crypto == "RSA Asymmetric Encryption":
         key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
-
-if selected_crypto == "Fernet Symmetric Encryption":
-    st.subheader("Fernet Symmetric Encryption")
-    st.write("To encrypt or decrypt using Fernet Symmetric Encryption, you need to provide a secret key.")
-    st.write("Here is the generated secret key:")
-    generated_key = generate_fernet_key()
-    st.write(generated_key.decode())
-    text = st.text_area("Enter Text")
-    key = st.text_input("Enter Encryption Key (Use the generated key)")
-
-if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption", "Fernet Symmetric Encryption"]:
+    shift_key = st.number_input("Shift Key (Caesar Cipher)", min_value=1, max_value=25, step=1, value=3)
     if_decrypt = st.checkbox("Decrypt")
 
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
