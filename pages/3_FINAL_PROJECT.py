@@ -63,9 +63,12 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
         private_key_pem = key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption())
         st.write("Generated RSA Secret Key:")
         st.code(private_key_pem.decode())
-
     if if_decrypt:
-        private_key = serialization.load_pem_private_key(key.encode(), password=None)
+        private_key = serialization.load_pem_private_key(
+            key.encode(),
+            password=None,
+            backend=default_backend()
+        )
         decrypted_text = private_key.decrypt(
             base64.b64decode(text),
             padding.OAEP(
@@ -75,6 +78,7 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
             )
         ).decode()
         return decrypted_text, None, None
+
 
     else:
         if isinstance(key, str):
