@@ -73,8 +73,9 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
                 algorithm=hashes.SHA256(),
                 label=None
             )
-        )
-        return decrypted_text.decode(), None, None
+        ).decode()
+        return decrypted_text, None, None
+
     else:
         if isinstance(key, str):
             key = key.encode()
