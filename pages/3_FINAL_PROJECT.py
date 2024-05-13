@@ -66,15 +66,15 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
 
     if if_decrypt:
         private_key = serialization.load_pem_private_key(key.encode(), password=None)
-        decrypted_text = private_key.decrypt(base64.b64decode(text), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return decrypted_text.decode(), None, None, key
+        decrypted_text = private_key.decrypt(base64.b64decode(text.encode()), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+        return decrypted_text.decode(), None, None
+
     else:
         if isinstance(key, str):
             key = key.encode()
         public_key = serialization.load_pem_public_key(key)
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return base64.b64encode(encrypted_text).decode(), None, key, None
-
+        return base64.b64encode(encrypted_text).decode(), None, key
 
 # Hashing Functions
 def hash_text(text, algorithm):
