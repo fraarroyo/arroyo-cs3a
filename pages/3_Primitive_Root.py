@@ -42,12 +42,12 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using the Fernet symmetric encryption."""
     if not key:
         key = Fernet.generate_key()
-        st.write("Generated Fernet Secret Key:", key)
+        st.write("Generated Fernet Secret Key:", key.decode())
     fernet = Fernet(key)
     if if_decrypt:
         return fernet.decrypt(text.encode()).decode(), None, None
     else:
-        return fernet.encrypt(text.encode()).decode(), key, None
+        return fernet.encrypt(text.encode()).decode(), key.decode(), None
 
 # RSA Asymmetric Encryption
 def generate_rsa_public_key():
@@ -60,7 +60,7 @@ def rsa_encrypt_decrypt(text, if_decrypt, public_key=None):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if not public_key:
         public_key = generate_rsa_public_key()
-        st.write("Generated RSA Public Key:", public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo))
+        st.write("Generated RSA Public Key:", public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode())
     if if_decrypt:
         st.error("RSA encryption with only public key is not supported for decryption.")
         return None, None, None
@@ -73,7 +73,7 @@ def rsa_encrypt_decrypt(text, if_decrypt, public_key=None):
                 label=None
             )
         )
-        return base64.b64encode(encrypted_text).decode(), public_key, None
+        return base64.b64encode(encrypted_text).decode(), public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode(), None
 
 # Hashing Functions
 def hash_text(text, algorithm):
@@ -102,7 +102,7 @@ if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asym
         key = st.text_input("Enter Encryption Key")
     elif selected_crypto == "RSA Asymmetric Encryption":
         public_key = st.text_area("Public Key")
-        st.write("Generated RSA Public Key:", generate_rsa_public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo))
+        st.write("Generated RSA Public Key:", generate_rsa_public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode())
     if_decrypt = st.checkbox("Decrypt")
 
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
