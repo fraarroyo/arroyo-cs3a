@@ -49,6 +49,20 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     else:
         return fernet.encrypt(text.encode()).decode(), key, None
 
+# Fernet Symmetric Encryption for Files
+def fernet_file_encrypt_decrypt(file_contents, key, if_decrypt):
+    """Encrypts or decrypts file contents using the Fernet symmetric encryption."""
+    if not key:
+        key = Fernet.generate_key()
+        st.write("Generated Fernet Secret Key:", key)
+    fernet = Fernet(key)
+    if if_decrypt:
+        decrypted_contents = fernet.decrypt(file_contents)
+        return decrypted_contents, None
+    else:
+        encrypted_contents = fernet.encrypt(file_contents)
+        return encrypted_contents, key
+
 def rsa_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if not key:
@@ -122,7 +136,28 @@ if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asym
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
     text = st.text_area("Enter Text")
 
-if st.button("Submit"):
+if selected_crypto == "Fernet Symmetric Encryption" and st.button("Encrypt/Decrypt File"):
+    # Add file uploader
+    file = st.file_uploader("Upload File")
+
+    # Check if file is uploaded
+    if file is not None:
+        file_contents = file.read()
+        file.seek(0)  # Reset file pointer to beginning
+
+        if st.checkbox("Decrypt"):
+            key = st.text_input("Enter Decryption Key")
+        else:
+            key = st.text_input("Enter Encryption Key")
+        
+        if_decrypt = st.checkbox("Decrypt")
+
+        processed_file, _ = fernet_file_encrypt_decrypt(file_contents, key, if_decrypt)
+        if if_decrypt:
+            st.download_button(label="Download Decrypted File", data=processed_file, file_name="decrypted_file.txt", mime="text/plain")
+        else:
+            st.download_button(label="Download Encrypted File", data=processed_file, file_name="encrypted_file.txt", mime="text/plain")
+elif st.button("Submit"):
     if selected_crypto == "Caesar Cipher":
         processed_text, _, _ = caesar_cipher(text, shift_key, if_decrypt)
     elif selected_crypto == "Fernet Symmetric Encryption":
