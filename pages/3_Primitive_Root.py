@@ -35,7 +35,7 @@ def caesar_cipher(text, shift_key, if_decrypt):
             result += char
     return result
 
-# Fernet Symmetric Encryption
+# Fernet Symmetric Encryption for text
 def fernet_encrypt_decrypt_text(text, key, if_decrypt):
     """Encrypts or decrypts text using the Fernet symmetric encryption."""
     fernet = Fernet(key)
@@ -53,8 +53,8 @@ def fernet_encrypt_decrypt_file(file_content, key, if_decrypt):
     else:
         return fernet.encrypt(file_content)
 
-# RSA Asymmetric Encryption
-def rsa_encrypt_decrypt(text, key, if_decrypt):
+# RSA Asymmetric Encryption for text
+def rsa_encrypt_decrypt_text(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if if_decrypt:
         private_key = serialization.load_pem_private_key(key.encode(), password=None)
@@ -80,66 +80,56 @@ def generate_fernet_key():
     return Fernet.generate_key()
 
 # Streamlit UI setup
-crypto_options = ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption", 
-                  "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]
+crypto_options = ["Text Encryption / Decryption", "File Encryption / Decryption", "Hashing"]
 selected_crypto = st.sidebar.selectbox("Select Cryptographic Technique", crypto_options)
 
-if selected_crypto in descriptions:
-    st.sidebar.subheader(selected_crypto)
-    st.sidebar.write(descriptions[selected_crypto])
-
-file = st.file_uploader("Upload File")
-
-if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption"]:
+if selected_crypto == "Text Encryption / Decryption":
+    st.subheader("Text Encryption and Decryption")
     text = st.text_area("Enter Text")
-    if selected_crypto == "RSA Asymmetric Encryption":
+    selected_algorithm = st.selectbox("Select Encryption Algorithm", ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption"])
+    if selected_algorithm == "RSA Asymmetric Encryption":
         key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
-
-if selected_crypto == "Fernet Symmetric Encryption":
-    st.subheader("Fernet Symmetric Encryption")
-    st.write("To encrypt or decrypt using Fernet Symmetric Encryption, you need to provide a secret key.")
-    st.write("Here is the generated secret key:")
-    generated_key = generate_fernet_key()
-    st.write(generated_key.decode())
-    text = st.text_area("Enter Text")
-    key = st.text_input("Enter Encryption Key (Use the generated key)")
-
-if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption", "Fernet Symmetric Encryption"]:
     if_decrypt = st.checkbox("Decrypt")
 
-if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
+    if st.button("Submit"):
+        if selected_algorithm == "Caesar Cipher":
+            shift_key = st.number_input("Enter Shift Key", value=1)
+            processed_text = caesar_cipher(text, shift_key, if_decrypt)
+        elif selected_algorithm == "Fernet Symmetric Encryption":
+            generated_key = generate_fernet_key()
+            processed_text = fernet_encrypt_decrypt_text(text, generated_key.decode(), if_decrypt)
+        elif selected_algorithm == "RSA Asymmetric Encryption":
+            processed_text = rsa_encrypt_decrypt_text(text, key, if_decrypt)
+
+        st.write("Processed Text:", processed_text)
+
+elif selected_crypto == "File Encryption / Decryption":
+    st.subheader("File Encryption and Decryption")
+    file = st.file_uploader("Upload File")
+
+    selected_algorithm = st.selectbox("Select Encryption Algorithm", ["Fernet Symmetric Encryption"])
+    if_decrypt = st.checkbox("Decrypt")
+
+    if st.button("Submit") and file:
+        file_content = file.read()
+        if selected_algorithm == "Fernet Symmetric Encryption":
+            generated_key = generate_fernet_key()
+            processed_file_content = fernet_encrypt_decrypt_file(file_content, generated_key.decode(), if_decrypt)
+            st.write("Processed File Content:", processed_file_content.decode())
+
+elif selected_crypto == "Hashing":
+    st.subheader("Hashing")
     text = st.text_area("Enter Text")
+    selected_algorithm = st.selectbox("Select Hashing Algorithm", ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"])
 
-if st.button("Submit"):
-    if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption"]:
-        if file:
-            file_content = file.read()
-        else:
-            file_content = None
+    if st.button("Submit"):
+        if selected_algorithm == "SHA-1 Hashing":
+            processed_text = sha1_hash(text)
+        elif selected_algorithm == "SHA-256 Hashing":
+            processed_text = hash_text(text, "sha256")
+        elif selected_algorithm == "SHA-512 Hashing":
+            processed_text = hash_text(text, "sha512")
+        elif selected_algorithm == "MD5 Hashing":
+            processed_text = hash_text(text, "md5")
 
-    if selected_crypto == "Caesar Cipher":
-        shift_key = st.number_input("Enter Shift Key", value=1)
-        processed_text = caesar_cipher(text, shift_key, if_decrypt)
-        processed_file_content = caesar_cipher(file_content.decode(), shift_key, if_decrypt) if file_content else None
-    elif selected_crypto == "Fernet Symmetric Encryption":
-        processed_text = fernet_encrypt_decrypt_text(text, key, if_decrypt)
-        processed_file_content = fernet_encrypt_decrypt_file(file_content, key, if_decrypt) if file_content else None
-    elif selected_crypto == "RSA Asymmetric Encryption":
-        processed_text = rsa_encrypt_decrypt(text, key, if_decrypt)
-        processed_file_content = None  # RSA doesn't directly support file encryption/decryption
-    elif selected_crypto == "SHA-1 Hashing":
-        processed_text = sha1_hash(text)
-        processed_file_content = None
-    elif selected_crypto == "SHA-256 Hashing":
-        processed_text = hash_text(text, "sha256")
-        processed_file_content = None
-    elif selected_crypto == "SHA-512 Hashing":
-        processed_text = hash_text(text, "sha512")
-        processed_file_content = None
-    elif selected_crypto == "MD5 Hashing":
-        processed_text = hash_text(text, "md5")
-        processed_file_content = None
-
-    st.write("Processed Text:", processed_text)
-    if file_content and processed_file_content:
-        st.write("Processed File Content:", processed_file_content.decode())
+        st.write("Hashed Text:", processed_text)
