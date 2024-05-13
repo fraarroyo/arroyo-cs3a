@@ -49,25 +49,52 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     else:
         return fernet.encrypt(text.encode()).decode(), key, None
 
-def rsa_decrypt(ciphertext, private_key):
-    """Decrypts the ciphertext using the provided RSA private key."""
-    try:
-        private_key = serialization.load_pem_private_key(
-            private_key.encode(),
-            password=None,
-            backend=default_backend()
-        )
-        decrypted_text = private_key.decrypt(
-            base64.b64decode(ciphertext),
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
+def rsa_encrypt_decrypt(text, key, if_decrypt, mgf_algorithm=None, hash_algorithm=None):
+    """Encrypts or decrypts text using RSA asymmetric encryption."""
+    if not key:
+        key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        public_key = key.public_key()
+        # Generate public key and display it
+        public_key_pem = public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo)
+        st.write("Generated RSA Public Key:")
+        st.code(public_key_pem.decode())
+
+        # Generate private key in PKCS#1 format and display it
+        private_key_pem = key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption())
+        st.write("Generated RSA Secret Key:")
+        st.code(private_key_pem.decode())
+    if if_decrypt:
+        try:
+            private_key = serialization.load_pem_private_key(
+                key.encode(),
+                password=None,
+                backend=default_backend()
             )
-        ).decode()
-        return decrypted_text
-    except Exception as e:
-        return str(e)
+            st.write("Private Key Loaded Successfully:", private_key)  # Debugging
+            st.write("Ciphertext:", text)  # Debugging
+            if mgf_algorithm is None:
+                mgf_algorithm = padding.MGF1(algorithm=hashes.SHA256())
+            if hash_algorithm is None:
+                hash_algorithm = hashes.SHA256()
+            decrypted_text = private_key.decrypt(
+                base64.b64decode(text),
+                padding.OAEP(
+                    mgf=mgf_algorithm,
+                    algorithm=hash_algorithm,
+                    label=None
+                )
+            ).decode()
+            return decrypted_text, None, None
+        except Exception as e:
+            st.write("Error during decryption:", e)
+            return "Decryption Error", None, None
+    else:
+        if isinstance(key, str):
+            key = key.encode()
+        public_key = serialization.load_pem_public_key(key)
+        encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+        return base64.b64encode(encrypted_text).decode(), None, key
+
 
 
 # Hashing Functions
