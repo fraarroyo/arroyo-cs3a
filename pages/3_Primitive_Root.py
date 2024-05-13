@@ -106,7 +106,7 @@ if selected_crypto.startswith("Fernet Symmetric Encryption"):
         
 if selected_crypto.startswith("Fernet Symmetric Decryption"):
     text = st.text_area("Enter Text")
-    generated_key = st.text_input("Enter Secret Key", type="password")
+    generated_key = st.text_input("Enter Secret Key", value="Generated Secret Key", disabled=True)
 
 if selected_crypto.startswith("RSA Asymmetric Encryption"):
     text = st.text_area("Enter Text")
