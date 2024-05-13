@@ -70,6 +70,7 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
                 password=None,
                 backend=default_backend()
             )
+            st.write("Private Key Loaded Successfully:", private_key)  # Debugging
             decrypted_text = private_key.decrypt(
                 base64.b64decode(text),
                 padding.OAEP(
@@ -88,6 +89,7 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
         public_key = serialization.load_pem_public_key(key)
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return base64.b64encode(encrypted_text).decode(), None, key
+
 
 # Hashing Functions
 def hash_text(text, algorithm):
