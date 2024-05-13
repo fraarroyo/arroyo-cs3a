@@ -102,21 +102,21 @@ if selected_crypto.startswith("Fernet Symmetric Encryption"):
         generated_key = generate_fernet_key()
         st.write("Generated Secret Key for Encryption:", generated_key.decode())
     else:
-        generated_key = st.text_input("Enter Secret Key")
+        generated_key = st.text_input("Enter Secret Key", type="password")
         
 if selected_crypto.startswith("RSA Asymmetric Encryption"):
     text = st.text_area("Enter Text")
     if_decrypt = selected_crypto.endswith("Decryption")
     key_label = "Public Key (Encryption)" if not if_decrypt else "Private Key (Decryption)"
-    key = st.text_area(f"Enter {key_label}")
+    key = st.text_area(f"Enter {key_label}", type="password")
 
 if selected_crypto.startswith("Fernet Symmetric Decryption") or selected_crypto.startswith("RSA Asymmetric Decryption"):
     text = st.text_area("Enter Text")
     if selected_crypto.startswith("Fernet Symmetric Decryption"):
-        generated_key = st.text_input("Enter Secret Key")
+        generated_key = st.text_input("Enter Secret Key", type="password")
     else:
         key_label = "Private Key" if selected_crypto.startswith("RSA Asymmetric Decryption") else "Public Key"
-        key = st.text_area(f"Enter {key_label}")
+        key = st.text_area(f"Enter {key_label}", type="password")
 
     
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
