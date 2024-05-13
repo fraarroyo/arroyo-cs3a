@@ -108,14 +108,21 @@ elif selected_crypto == "File Encryption / Decryption":
     file = st.file_uploader("Upload File")
 
     selected_algorithm = st.selectbox("Select Encryption Algorithm", ["Fernet Symmetric Encryption"])
-    if_decrypt = st.checkbox("Decrypt")
+    encrypt_option = st.checkbox("Encrypt")
+    decrypt_option = st.checkbox("Decrypt")
 
     if st.button("Submit") and file:
         file_content = file.read()
-        if selected_algorithm == "Fernet Symmetric Encryption":
+        if encrypt_option:
             generated_key = generate_fernet_key()
-            processed_file_content = fernet_encrypt_decrypt_file(file_content, generated_key.decode(), if_decrypt)
-            st.write("Processed File Content:", processed_file_content.decode())
+            processed_file_content = fernet_encrypt_decrypt_file(file_content, generated_key.decode(), if_decrypt=False)
+            st.write("Encrypted File Content:", processed_file_content.decode())
+            st.download_button("Download Encrypted File", processed_file_content, file_name="encrypted_file.txt", mime="text/plain")
+        elif decrypt_option:
+            key = st.text_input("Enter Decryption Key")
+            processed_file_content = fernet_encrypt_decrypt_file(file_content, key, if_decrypt=True)
+            st.write("Decrypted File Content:", processed_file_content.decode())
+            st.download_button("Download Decrypted File", processed_file_content, file_name="decrypted_file.txt", mime="text/plain")
 
 elif selected_crypto == "Hashing":
     st.subheader("Hashing")
