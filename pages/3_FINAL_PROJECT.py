@@ -59,8 +59,8 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
         st.write("Generated RSA Public Key:")
         st.code(public_key_pem.decode())
 
-        # Generate private key and display it
-        private_key_pem = key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption())
+        # Generate private key in PKCS#1 format and display it
+        private_key_pem = key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption())
         st.write("Generated RSA Secret Key:")
         st.code(private_key_pem.decode())
 
