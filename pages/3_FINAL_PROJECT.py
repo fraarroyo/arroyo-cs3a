@@ -54,8 +54,16 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
     if not key:
         key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
         public_key = key.public_key()
-        st.write("Generated RSA Public Key:", public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo))
-        st.write("Generated RSA Secret Key:", key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption()))
+        # Generate public key and display it
+        public_key_pem = public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo)
+        st.write("Generated RSA Public Key:")
+        st.code(public_key_pem.decode())
+
+        # Generate private key and display it
+        private_key_pem = key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.NoEncryption())
+        st.write("Generated RSA Secret Key:")
+        st.code(private_key_pem.decode())
+
     if if_decrypt:
         private_key = serialization.load_pem_private_key(key, password=None)
         decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
