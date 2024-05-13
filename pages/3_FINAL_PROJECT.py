@@ -49,9 +49,9 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
         return fernet.encrypt(text.encode()).decode(), key, None
 
 # RSA Asymmetric Encryption
-def rsa_encrypt_decrypt(text, public_key, private_key, if_decrypt):
+def rsa_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
-    if not public_key or not private_key:
+    if not key:
         key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
         public_key = key.public_key()
         # Generate public key and display it
@@ -65,17 +65,15 @@ def rsa_encrypt_decrypt(text, public_key, private_key, if_decrypt):
         st.code(private_key_pem.decode())
 
     if if_decrypt:
-        if isinstance(private_key, str):
-            private_key = private_key.encode()
-        private_key = serialization.load_pem_private_key(private_key, password=None)
+        private_key = serialization.load_pem_private_key(key.encode(), password=None)
         decrypted_text = private_key.decrypt(base64.b64decode(text.encode()), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return decrypted_text.decode(), None, None
     else:
-        if isinstance(public_key, str):
-            public_key = public_key.encode()
-        public_key = serialization.load_pem_public_key(public_key)
+        if isinstance(key, str):
+            key = key.encode()
+        public_key = serialization.load_pem_public_key(key)
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        return base64.b64encode(encrypted_text).decode(), None, None
+        return base64.b64encode(encrypted_text).decode(), None, key
 
 # Hashing Functions
 def hash_text(text, algorithm):
