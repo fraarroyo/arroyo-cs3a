@@ -65,11 +65,18 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
         st.code(private_key_pem.decode())
 
     if if_decrypt:
-        private_key = serialization.load_pem_private_key(key, password=None)
+        if b"BEGIN RSA PRIVATE KEY" in key:
+            private_key = serialization.load_pem_private_key(key, password=None)
+        else:
+            private_key = serialization.load_pem_private_key(key, password=None)
         decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return decrypted_text.decode(), None, None
     else:
-        public_key = serialization.load_pem_public_key(key)
+        if b"BEGIN PUBLIC KEY" in key:
+            public_key = serialization.load_pem_public_key(key)
+        else:
+            private_key = serialization.load_pem_private_key(key, password=None)
+            public_key = private_key.public_key()
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return base64.b64encode(encrypted_text).decode(), None, key
 
