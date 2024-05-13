@@ -1,4 +1,5 @@
 import streamlit as st
+import uuid  # Import UUID library for generating unique identifiers
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -19,6 +20,10 @@ descriptions = {
     "SHA-512 Hashing": "SHA-512 is a cryptographic hash function that produces a 512-bit (64-byte) hash value. It provides stronger security than SHA-256.",
     "MD5 Hashing": "MD5 is a widely used cryptographic hash function that produces a 128-bit (16-byte) hash value. It is commonly used for checksums and data integrity verification."
 }
+
+# Generate unique IDs for widgets
+key_input_id = str(uuid.uuid4()) + "_key_input"
+public_key_input_id = str(uuid.uuid4()) + "_public_key_input"
 
 # Caesar Cipher
 def caesar_cipher(text, shift_key, if_decrypt):
@@ -96,12 +101,12 @@ if selected_crypto in descriptions:
 
 # Display secret key and public key at the top of input fields
 if selected_crypto == "Fernet Symmetric Encryption":
-    key = st.text_input("Enter Encryption Key")
+    key = st.text_input("Enter Encryption Key", key_input_id)
     if not key:
         key = Fernet.generate_key()
         st.write("Generated Fernet Secret Key:", key.decode())
 elif selected_crypto == "RSA Asymmetric Encryption":
-    public_key = st.text_area("Public Key")
+    public_key = st.text_area("Public Key", public_key_input_id)
     if not public_key:
         generated_public_key = generate_rsa_public_key()
         public_key = generated_public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode()
@@ -112,9 +117,9 @@ if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asym
     if selected_crypto == "Caesar Cipher":
         shift_key = st.number_input("Shift Key (Caesar Cipher)", min_value=1, max_value=25, step=1, value=3)
     if selected_crypto == "Fernet Symmetric Encryption":
-        key = st.text_input("Enter Encryption Key")
+        key = st.text_input("Enter Encryption Key", key_input_id)
     elif selected_crypto == "RSA Asymmetric Encryption":
-        public_key = st.text_area("Public Key")
+        public_key = st.text_area("Public Key", public_key_input_id)
         st.write("Generated RSA Public Key:", generate_rsa_public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode())
     if_decrypt = st.checkbox("Decrypt")
 
