@@ -49,7 +49,7 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     else:
         return fernet.encrypt(text.encode()).decode(), key, None
 
-def rsa_encrypt_decrypt(text, key, if_decrypt, mgf_algorithm=None, hash_algorithm=None):
+def rsa_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if not key:
         key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -64,24 +64,30 @@ def rsa_encrypt_decrypt(text, key, if_decrypt, mgf_algorithm=None, hash_algorith
         st.write("Generated RSA Secret Key:")
         st.code(private_key_pem.decode())
     if if_decrypt:
-        private_key = serialization.load_pem_private_key(key.encode(), password=None)
-        decrypted_text = private_key.decrypt(
-            base64.b64decode(text),
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
+        try:
+            private_key = serialization.load_pem_private_key(
+                key.encode(),
+                password=None,
+                backend=default_backend()
             )
-        ).decode()
-        return decrypted_text, None, None
-
+            decrypted_text = private_key.decrypt(
+                base64.b64decode(text),
+                padding.OAEP(
+                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None
+                )
+            ).decode()
+            return decrypted_text, None, None
+        except Exception as e:
+            st.write("Error during decryption:", e)
+            return "Decryption Error", None, None
     else:
         if isinstance(key, str):
             key = key.encode()
         public_key = serialization.load_pem_public_key(key)
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return base64.b64encode(encrypted_text).decode(), None, key
-
 
 
 # Hashing Functions
@@ -122,7 +128,7 @@ if st.button("Submit"):
     elif selected_crypto == "Fernet Symmetric Encryption":
         processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
     elif selected_crypto == "RSA Asymmetric Encryption":
-        processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt, mgf_algorithm=hashes.SHA256(), hash_algorithm=hashes.SHA256())
+        processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt)
     elif selected_crypto == "SHA-1 Hashing":
         processed_text = sha1_hash(text)
     elif selected_crypto == "SHA-256 Hashing":
