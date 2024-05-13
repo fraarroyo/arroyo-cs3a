@@ -44,11 +44,15 @@ def symmetric_file_decrypt(encrypted_file, key):
 
 def asymmetric_text_encrypt(plaintext, public_key):
     """Asymmetric encryption of text."""
-    cipher_text = public_key.encrypt(
+    ciphertext = public_key.encrypt(
         plaintext.encode(),
-        padding.PKCS1v15()
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
     )
-    return base64.b64encode(cipher_text).decode()
+    return base64.b64encode(ciphertext).decode()
 
 def asymmetric_text_decrypt(ciphertext, private_key):
     """Asymmetric decryption of text."""
