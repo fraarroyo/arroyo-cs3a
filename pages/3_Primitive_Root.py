@@ -1,7 +1,7 @@
 import streamlit as st
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.fernet import Fernet, InvalidToken
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 import hashlib
 import base64
 
@@ -35,14 +35,19 @@ def caesar_cipher(text, shift_key, if_decrypt):
             result += char
     return result
 
-# Fernet Symmetric Encryption
-def fernet_encrypt_decrypt(text, key, if_decrypt):
-    """Encrypts or decrypts text using the Fernet symmetric encryption."""
+# Fernet Symmetric Encryption - Encryption
+def fernet_encrypt(text, key):
     fernet = Fernet(key)
-    if if_decrypt:
+    return fernet.encrypt(text.encode()).decode()
+
+# Fernet Symmetric Encryption - Decryption
+def fernet_decrypt(text, key):
+    fernet = Fernet(key)
+    try:
         return fernet.decrypt(text.encode()).decode()
-    else:
-        return fernet.encrypt(text.encode()).decode()
+    except InvalidToken:
+        st.error("Invalid token. Failed to decrypt the data.")
+        return None
 
 # RSA Asymmetric Encryption
 def rsa_encrypt_decrypt(text, key, if_decrypt):
@@ -86,12 +91,21 @@ if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption"]:
 
 if selected_crypto == "Fernet Symmetric Encryption":
     st.subheader("Fernet Symmetric Encryption")
-    st.write("To encrypt or decrypt using Fernet Symmetric Encryption, you need to provide a secret key.")
-    st.write("Here is the generated secret key:")
-    generated_key = generate_fernet_key()
-    st.write(generated_key.decode())
-    text = st.text_area("Enter Text")
-    key = st.text_input("Enter Encryption Key (Use the generated key)")
+
+    # Encryption
+    st.subheader("Encryption")
+    text_encrypt = st.text_area("Enter Text to Encrypt")
+    generate_key = st.checkbox("Generate Key")
+    if generate_key:
+        generated_key = generate_fernet_key()
+        st.write("Generated Secret Key for Encryption:", generated_key.decode())
+    else:
+        generated_key = None
+
+    # Decryption
+    st.subheader("Decryption")
+    text_decrypt = st.text_area("Enter Text to Decrypt")
+    key_decrypt = st.text_input("Enter Secret Key for Decryption")
 
 if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption", "Fernet Symmetric Encryption"]:
     if_decrypt = st.checkbox("Decrypt")
@@ -103,7 +117,10 @@ if st.button("Submit"):
     if selected_crypto == "Caesar Cipher":
         processed_text = caesar_cipher(text, shift_key, if_decrypt)
     elif selected_crypto == "Fernet Symmetric Encryption":
-        processed_text = fernet_encrypt_decrypt(text, key, if_decrypt)
+        if generated_key:
+            processed_text = fernet_encrypt(text_encrypt, generated_key)
+        else:
+            processed_text = fernet_decrypt(text_decrypt, key_decrypt)
     elif selected_crypto == "RSA Asymmetric Encryption":
         processed_text = rsa_encrypt_decrypt(text, key, if_decrypt)
     elif selected_crypto == "SHA-1 Hashing":
