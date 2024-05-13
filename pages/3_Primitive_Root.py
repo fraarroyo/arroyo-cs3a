@@ -65,7 +65,14 @@ def rsa_encrypt_decrypt(text, if_decrypt, public_key=None):
         st.error("RSA encryption with only public key is not supported for decryption.")
         return None, None, None
     else:
-        encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256())), algorithm=hashes.SHA256(), label=None)
+        encrypted_text = public_key.encrypt(
+            text.encode(),
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
         return base64.b64encode(encrypted_text).decode(), public_key, None
 
 # Hashing Functions
