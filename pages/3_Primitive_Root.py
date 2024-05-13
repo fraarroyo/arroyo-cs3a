@@ -2,6 +2,7 @@ import streamlit as st
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import hashes
 import hashlib
 import base64
 
@@ -95,7 +96,6 @@ if selected_crypto == "Fernet Symmetric Encryption":
         st.write("Generated Secret Key for Encryption:", generated_key.decode())
     else:
         generated_key = None
-    if_decrypt = st.checkbox("Decrypt")
 
 if selected_crypto == "RSA Asymmetric Encryption":
     text = st.text_area("Enter Text")
