@@ -49,7 +49,7 @@ def rsa_encrypt_decrypt_text(text, key, if_decrypt):
     """Encrypts or decrypts text using RSA asymmetric encryption."""
     if if_decrypt:
         private_key = serialization.load_pem_private_key(key.encode(), password=None)
-        decrypted_text = private_key.decrypt(text, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+        decrypted_text = private_key.decrypt(base64.b64decode(text), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return decrypted_text.decode()
     else:
         public_key = serialization.load_pem_public_key(key.encode())
@@ -87,8 +87,12 @@ if selected_crypto == "Text Encryption / Decryption":
             shift_key = st.number_input("Enter Shift Key", value=1)
             processed_text = caesar_cipher(text, shift_key, if_decrypt)
         elif selected_algorithm == "Fernet Symmetric Encryption":
-            generated_key = generate_fernet_key()
-            processed_text = fernet_encrypt_decrypt_text(text, generated_key.decode(), if_decrypt)
+            if if_decrypt:
+                key = st.text_input("Enter Encryption Key (Use the generated key)")
+            else:
+                generated_key = generate_fernet_key()
+                key = generated_key.decode()
+            processed_text = fernet_encrypt_decrypt_text(text, key, if_decrypt)
         elif selected_algorithm == "RSA Asymmetric Encryption":
             processed_text = rsa_encrypt_decrypt_text(text, key, if_decrypt)
 
@@ -104,8 +108,16 @@ elif selected_crypto == "File Encryption / Decryption":
     if st.button("Submit") and file:
         file_content = file.read()
         if selected_algorithm == "Fernet Symmetric Encryption":
-            generated_key = generate_fernet_key()
-            processed_file_content = fernet_encrypt_decrypt_file(file_content, generated_key.decode(), if_decrypt)
+            if if_decrypt:
+                key = st.text_input("Enter Encryption Key (Use the generated key)")
+            else:
+                generated_key = generate_fernet_key()
+                key = generated_key.decode()
+            fernet = Fernet(key)
+            if if_decrypt:
+                processed_file_content = fernet.decrypt(file_content)
+            else:
+                processed_file_content = fernet.encrypt(file_content)
             st.write("Processed File Content:", processed_file_content.decode())
 
 elif selected_crypto == "Hashing":
