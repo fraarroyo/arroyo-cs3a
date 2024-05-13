@@ -99,7 +99,13 @@ if selected_crypto in ["Caesar Cipher", "RSA Asymmetric Encryption", "Fernet Sym
 if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
     text = st.text_area("Enter Text")
 
+uploaded_file = st.file_uploader("Choose a file")
+
 if st.button("Submit"):
+    if uploaded_file is not None:
+        file_contents = uploaded_file.getvalue().decode("utf-8")
+        text = file_contents
+
     if selected_crypto == "Caesar Cipher":
         processed_text = caesar_cipher(text, shift_key, if_decrypt)
     elif selected_crypto == "Fernet Symmetric Encryption":
