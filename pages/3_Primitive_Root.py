@@ -94,6 +94,19 @@ if selected_crypto in descriptions:
     st.sidebar.subheader(selected_crypto)
     st.sidebar.write(descriptions[selected_crypto])
 
+# Display secret key and public key at the top of input fields
+if selected_crypto == "Fernet Symmetric Encryption":
+    key = st.text_input("Enter Encryption Key")
+    if not key:
+        key = Fernet.generate_key()
+        st.write("Generated Fernet Secret Key:", key.decode())
+elif selected_crypto == "RSA Asymmetric Encryption":
+    public_key = st.text_area("Public Key")
+    if not public_key:
+        generated_public_key = generate_rsa_public_key()
+        public_key = generated_public_key.public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo).decode()
+        st.write("Generated RSA Public Key:", public_key)
+
 if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption"]:
     text = st.text_area("Enter Text")
     if selected_crypto == "Caesar Cipher":
