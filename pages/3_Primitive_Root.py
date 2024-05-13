@@ -93,6 +93,7 @@ if selected_crypto in descriptions:
 if selected_crypto == "Caesar Cipher":
     text = st.text_area("Enter Text")
     shift_key = st.number_input("Shift Key", min_value=1, max_value=25, step=1, value=3)
+    if_decrypt = st.checkbox("Decrypt")
 
 if selected_crypto.startswith("Fernet Symmetric Encryption"):
     text = st.text_area("Enter Text")
