@@ -8,26 +8,33 @@ import base64
 import os
 
 
+
 def homepage():
-    # Center-align the title
     st.markdown("<div style='text-align: center;'><h2>Welcome to Cryptography Toolkit</h2></div>", unsafe_allow_html=True)
-    
-    # Center-align the subtitle
     st.markdown("<div style='text-align: center;'><h4>This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.</h4></div>", unsafe_allow_html=True)
-    
     st.write("")
-    
-    # Center-align the images using columns
-    col1, col2, col3 = st.columns([1, 1, 1])
-    
-    with col1:
-        st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
-    with col2:
-        st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption='Ma Veronica Beltrano')
-    with col3:
-        st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
-    
-    # Center-align the footer text
+
+    # Use HTML to center-align the images
+    st.markdown(
+        """
+        <div style='display: flex; justify-content: center;'>
+            <div style='margin: 0 10px;'>
+                <img src='435792060_908559531280445_5041796525148081874_n.jpg' width='200' />
+                <div style='text-align: center;'>Francis Arroyo</div>
+            </div>
+            <div style='margin: 0 10px;'>
+                <img src='80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg' width='200' />
+                <div style='text-align: center;'>Ma Veronica Beltrano</div>
+            </div>
+            <div style='margin: 0 10px;'>
+                <img src='36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg' width='200' />
+                <div style='text-align: center;'>Ma Antoinette Sisno</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     st.markdown("<div style='text-align: center;'><h4>Please select a technique from the sidebar to get started.</h4></div>", unsafe_allow_html=True)
 
 def main():
