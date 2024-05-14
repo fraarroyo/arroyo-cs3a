@@ -51,8 +51,12 @@ def main():
         if_decrypt = st.checkbox("Decrypt")
 
     if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
-        text = st.text_area("Enter Text")
-
+        text_or_file = st.radio("Hash Text or File?", ("Text", "File"))
+        if text_or_file == "Text":
+            text = st.text_area("Enter Text")
+        else:
+            file_uploaded = st.file_uploader("Upload a file")
+        
     if selected_crypto == "File Encryption":
         file_uploaded = st.file_uploader("Upload a file")
         key = st.text_input("Enter Encryption Key")
@@ -66,13 +70,25 @@ def main():
         elif selected_crypto == "RSA Asymmetric Encryption":
             processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt)
         elif selected_crypto == "SHA-1 Hashing":
-            processed_text = sha1_hash(text)
+            if text_or_file == "Text":
+                processed_text = sha1_hash(text)
+            else:
+                processed_text = hash_file(file_uploaded, "sha1")
         elif selected_crypto == "SHA-256 Hashing":
-            processed_text = hash_text(text, "sha256")
+            if text_or_file == "Text":
+                processed_text = hash_text(text, "sha256")
+            else:
+                processed_text = hash_file(file_uploaded, "sha256")
         elif selected_crypto == "SHA-512 Hashing":
-            processed_text = hash_text(text, "sha512")
+            if text_or_file == "Text":
+                processed_text = hash_text(text, "sha512")
+            else:
+                processed_text = hash_file(file_uploaded, "sha512")
         elif selected_crypto == "MD5 Hashing":
-            processed_text = hash_text(text, "md5")
+            if text_or_file == "Text":
+                processed_text = hash_text(text, "md5")
+            else:
+                processed_text = hash_file(file_uploaded, "md5")
         elif selected_crypto == "File Encryption":
             if file_uploaded is not None:
                 if if_decrypt:
