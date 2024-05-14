@@ -7,34 +7,25 @@ import hashlib
 import base64
 import os
 
-
 def homepage():
-    try:
-        # Center-align the title using markdown
-        st.markdown("<h2 style='text-align: center;'>Welcome to Cryptography Toolkit</h2>", unsafe_allow_html=True)
-        st.markdown("<h4 style='text-align: center;'>This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.</h4>", unsafe_allow_html=True)
-        
-        st.write("")
-        
-        # Debugging st.columns
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
-        
-        with col2:
-            st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption='Ma Veronica Beltrano')
-        
-        with col3:
-            st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
-        
-        st.markdown("<h4 style='text-align: center;'>Please select a technique from the sidebar to get started.</h4>", unsafe_allow_html=True)
+    st.markdown("<h3>Welcome to Cryptography Toolkit</h3>", unsafe_allow_html=True)
+    st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
+    st.write("")
     
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        import traceback
-        st.text(traceback.format_exc())
-        st.write("Please ensure you are using a compatible version of Streamlit (version 0.84.0 or later).")
+    # Create a row with three columns
+    col1, col2, col3 = st.columns(3)
+    
+    # Place each image in a separate column
+    with col1:
+        st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
+
+    with col2:
+        st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption='Ma Veronica Beltrano')
+
+    with col3:
+        st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
+
+    st.write("Please select a technique from the sidebar to get started.")
 
 def main():
     st.title("Applied Cryptography Application")
