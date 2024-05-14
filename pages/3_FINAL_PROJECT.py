@@ -81,7 +81,7 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
             return decrypted_text, None, None
         except Exception as e:
             st.write("Error during decryption:", e)
-            return "Decryption Error", None, None
+            return "Decryption Error: " + str(e), None, None  # Return error message
     else:
         if isinstance(key, str):
             key = key.encode()
