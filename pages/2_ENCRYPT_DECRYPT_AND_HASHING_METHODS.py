@@ -96,12 +96,12 @@ def main():
                     if if_decrypt:
                         decrypted_data = fernet_file_decrypt(file_uploaded, key)
                         if decrypted_data:
-                            st.download_button("Download Decrypted File", decrypted_data, file_name="decrypted_file")
+                            st.download_button("Download Decrypted File", decrypted_data, file_name="decrypted_file.txt")
                     else:
                         encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
                         if encrypted_data:
                             st.write(f"Encrypted file hash: {file_hash}")
-                            st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_file")
+                            st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_file.txt")
                 else:
                     processed_text = "No file uploaded."
         except Exception as e:
@@ -185,17 +185,22 @@ def sha1_hash(text):
     return hashlib.sha1(text.encode()).hexdigest()
 
 def hash_file(file, algorithm):
-    """Hashes the file using the specified algorithm."""
-    hasher = hashlib.new(algorithm)
-    for chunk in iter(lambda: file.read(4096), b""):
-        hasher.update(chunk)
-    return hasher.hexdigest()
+    """Computes the hash of a file using the specified algorithm."""
+    hash_function = hashlib.new(algorithm)
+    file.seek(0)  # Ensure we're at the start of the file
+    while True:
+        data = file.read(65536)  # Read in chunks to conserve memory
+        if not data:
+            break
+        hash_function.update(data)
+    file.seek(0)  # Reset file pointer to beginning after hashing
+    return hash_function.hexdigest()
 
 def fernet_file_encrypt(file, key):
-    """Encrypts a file using Fernet symmetric encryption."""
+    """Encrypts a file using Fernet symmetric encryption and computes its hash."""
     if not key:
-        key = Fernet.generate_key().decode()
-        st.write("Generated Fernet Secret Key:", key)
+        key = Fernet.generate_key()
+        st.write("Generated Fernet Secret Key:", key.decode())
     fernet = Fernet(key.encode())
     encrypted_data = fernet.encrypt(file.read())
     file_hash = hashlib.sha256(encrypted_data).hexdigest()
@@ -210,12 +215,6 @@ def fernet_file_decrypt(file, key):
     except Exception as e:
         st.error(f"Decryption error: {str(e)}")
         return None
-
-def get_download_link(data, label="Download file"):
-    """Generates a link to download the given data."""
-    b64 = base64.b64encode(data).decode()
-    href = f'<a href="data:file/octet-stream;base64,{b64}" download="file">{label}</a>'
-    return href
 
 if __name__ == "__main__":
     main()
