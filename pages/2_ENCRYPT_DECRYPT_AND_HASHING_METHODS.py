@@ -9,7 +9,7 @@ import os
 
 def homepage():
     st.markdown("<div style='text-align: center;'><h2>Welcome to Cryptography Toolkit</h2>", unsafe_allow_html=True)
-    st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
+    st.markdown("<div style='text-align: center;'><h4>This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.</h4>", unsafe_allow_html=True)
     st.write("")
     
     # Create a row with three columns
@@ -25,10 +25,10 @@ def homepage():
     with col3:
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
 
-    st.write("<div style='text-align: center;'>Please select a technique from the sidebar to get started.")
+    st.markdown("<div style='text-align: center;'><h4>Please select a technique from the sidebar to get started.</h4>", unsafe_allow_html=True)
 
 def main():
-    st.title("<div style='text-align: center;'>Applied Cryptography Application")
+    st.markdown("<div style='text-align: center;'><h1>Applied Cryptography Application</h1>", unsafe_allow_html=True)
 
     # Description for each cryptographic algorithm
     descriptions = {
