@@ -7,30 +7,33 @@ import hashlib
 import base64
 import os
 
-def homepage():
-    # Use markdown to center-align text
-    st.markdown("<h2 style='text-align: center;'>Welcome to Cryptography Toolkit</h2>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center;'>This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.</h4>", unsafe_allow_html=True)
-    
-    st.write("")
-    
-    # Ensure the Streamlit version is compatible with st.columns
-    try:
-        # Create columns to hold the images and captions
-        col1, col2, col3 = st.columns(3)
 
+def homepage():
+    try:
+        # Center-align the title using markdown
+        st.markdown("<h2 style='text-align: center;'>Welcome to Cryptography Toolkit</h2>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center;'>This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.</h4>", unsafe_allow_html=True)
+        
+        st.write("")
+        
+        # Debugging st.columns
+        col1, col2, col3 = st.columns(3)
+        
         with col1:
             st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
-
+        
         with col2:
             st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption='Ma Veronica Beltrano')
-
+        
         with col3:
             st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
-
+        
         st.markdown("<h4 style='text-align: center;'>Please select a technique from the sidebar to get started.</h4>", unsafe_allow_html=True)
-    except AttributeError as e:
-        st.error("An error occurred: {}".format(e))
+    
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        import traceback
+        st.text(traceback.format_exc())
         st.write("Please ensure you are using a compatible version of Streamlit (version 0.84.0 or later).")
 
 def main():
