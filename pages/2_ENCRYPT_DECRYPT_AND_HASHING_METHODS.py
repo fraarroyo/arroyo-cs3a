@@ -19,17 +19,17 @@ def main():
     descriptions = {
         "Caesar Cipher": "The Caesar Cipher is one of the simplest and most widely known encryption techniques. It is a substitution cipher where each letter in the plaintext is shifted a certain number of places down or up the alphabet.",
         "Fernet Symmetric Encryption": "Fernet is a symmetric encryption algorithm that uses a shared secret key to encrypt and decrypt data. It provides strong encryption and is easy to use.",
-        "File Encryption": "Symmetric encryption technique to encrypt and decrypt files using Fernet."
         "RSA Asymmetric Encryption": "RSA (Rivest-Shamir-Adleman) is an asymmetric encryption algorithm that uses a public-private key pair. It is widely used for secure communication and digital signatures.",
         "SHA-1 Hashing": "SHA-1 is a cryptographic hash function that produces a 160-bit (20-byte) hash value. It is commonly used for data integrity verification.",
         "SHA-256 Hashing": "SHA-256 is a cryptographic hash function that produces a 256-bit (32-byte) hash value. It is commonly used for data integrity verification.",
         "SHA-512 Hashing": "SHA-512 is a cryptographic hash function that produces a 512-bit (64-byte) hash value. It provides stronger security than SHA-256.",
         "MD5 Hashing": "MD5 is a widely used cryptographic hash function that produces a 128-bit (16-byte) hash value. It is commonly used for checksums and data integrity verification.",
+        "Symmetric File Encryption": "Symmetric encryption technique to encrypt and decrypt files using Fernet."
     }
 
     # Streamlit UI setup
-    crypto_options = ["Homepage", "Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption", 
-                      "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing", "File Encryption"]
+    crypto_options = ["Homepage", "Caesar Cipher", "Fernet Symmetric Encryption", "Symmetric File Encryption", "RSA Asymmetric Encryption", 
+                      "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]
     selected_crypto = st.sidebar.selectbox("Select Cryptographic Technique", crypto_options)
 
     if selected_crypto == "Homepage":
@@ -44,10 +44,6 @@ def main():
         text = st.text_area("Enter Text")
         if selected_crypto == "Caesar Cipher":
             shift_key = st.number_input("Shift Key (Caesar Cipher)", min_value=1, max_value=25, step=1, value=3)
-        if selected_crypto == "File Encryption":
-            file_uploaded = st.file_uploader("Upload a file")
-            key = st.text_input("Enter Encryption Key")
-            if_decrypt = st.checkbox("Decrypt")
         if selected_crypto == "Fernet Symmetric Encryption":
             key = st.text_input("Enter Encryption Key")
         elif selected_crypto == "RSA Asymmetric Encryption":
@@ -60,6 +56,11 @@ def main():
             text = st.text_area("Enter Text")
         else:
             file_uploaded = st.file_uploader("Upload a file")
+        
+    if selected_crypto == "Symmetric File Encryption":
+        file_uploaded = st.file_uploader("Upload a file")
+        key = st.text_input("Enter Encryption Key")
+        if_decrypt = st.checkbox("Decrypt")
 
     if st.button("Submit"):
         if selected_crypto == "Caesar Cipher":
@@ -88,7 +89,7 @@ def main():
                 processed_text = hash_text(text, "md5")
             else:
                 processed_text = hash_file(file_uploaded, "md5")
-        elif selected_crypto == "File Encryption Symmetric Encryption":
+        elif selected_crypto == "Symmetric File Encryption":
             if file_uploaded is not None:
                 if if_decrypt:
                     processed_text = fernet_file_decrypt(file_uploaded, key)
