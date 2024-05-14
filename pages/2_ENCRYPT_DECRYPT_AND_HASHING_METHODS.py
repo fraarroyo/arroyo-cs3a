@@ -26,9 +26,11 @@ def homepage():
     # Test displaying an image
     try:
         st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
+        st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption='Ma Veronica Beltrano')
+        st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
     except Exception as e:
         st.error(f"Image display failed: {e}")
-        
+
 def main():
     st.title("Applied Cryptography Application")
 
