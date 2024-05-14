@@ -8,7 +8,7 @@ import base64
 import os
 
 def homepage():
-    st.markdown("<h2>Welcome to Cryptography Toolkit</h2>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center;'><h2>Welcome to Cryptography Toolkit</h2>", unsafe_allow_html=True)
     st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
     st.write("")
     
