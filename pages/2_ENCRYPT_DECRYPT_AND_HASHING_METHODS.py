@@ -13,7 +13,7 @@ def homepage():
     st.write("")
 
     # Create columns for the images
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.beta_columns(3)
 
     # Place each image in a column
     with col1:
@@ -24,7 +24,6 @@ def homepage():
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
 
     st.write("Please select a technique from the sidebar to get started.")
-
 # Call the function to display the homepage
 homepage()
 
