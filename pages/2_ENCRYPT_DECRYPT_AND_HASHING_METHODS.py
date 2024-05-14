@@ -12,11 +12,14 @@ def homepage():
     st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
     st.write("")
 
-    # Define the width of each column
+    # Define the width of each image column
     col_width = 200
 
     # Create columns for the images
-    col1, col2, col3 = st.columns(3)
+    if st._is_running_with_streamlit:
+        col1, col2, col3 = st.beta_columns(3)
+    else:
+        col1, col2, col3 = st.columns(3)
 
     # Place each image in a column
     with col1:
