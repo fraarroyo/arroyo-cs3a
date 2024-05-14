@@ -93,17 +93,19 @@ def main():
                     processed_text = hash_file(file_uploaded, "md5")
             elif selected_crypto == "Symmetric File Encryption":
                 if file_uploaded is not None:
+                    original_filename = file_uploaded.name
                     if if_decrypt:
-                        decrypted_data = fernet_file_decrypt(file_uploaded, key)
+                        decrypted_data, filename = fernet_file_decrypt(file_uploaded, key, original_filename)
                         if decrypted_data:
-                            st.download_button("Download Decrypted File", decrypted_data, file_name="decrypted_file.txt")
+                            st.download_button("Download Decrypted File", decrypted_data, file_name=filename)
                     else:
                         encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
                         if encrypted_data:
                             st.write(f"Encrypted file hash: {file_hash}")
-                            st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_file.txt")
+                            st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_" + original_filename)
                 else:
                     processed_text = "No file uploaded."
+
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
         else:
