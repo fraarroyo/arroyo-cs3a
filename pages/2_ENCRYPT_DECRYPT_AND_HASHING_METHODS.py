@@ -102,7 +102,7 @@ def main():
                         encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
                         if encrypted_data:
                             st.write(f"Encrypted file hash: {file_hash}")
-                            st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_" + original_filename)
+                            st.download_button("Download Encrypted File", encrypted_data, file_name="Decrypted_" + original_filename)
                 else:
                     processed_text = "No file uploaded."
 
