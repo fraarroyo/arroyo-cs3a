@@ -93,9 +93,9 @@ def main():
                     processed_text = hash_file(file_uploaded, "md5")
             elif selected_crypto == "Symmetric File Encryption":
                 if file_uploaded is not None:
-                    original_filename = file_uploaded.name
+                    original_filename, file_extension = os.path.splitext(file_uploaded.name)
                     if if_decrypt:
-                        decrypted_data, filename = fernet_file_decrypt(file_uploaded, key, original_filename)
+                        decrypted_data, filename = fernet_file_decrypt(file_uploaded, key, original_filename, file_extension)
                         if decrypted_data:
                             st.download_button("Download Decrypted File", decrypted_data, file_name=filename)
                     else:
@@ -105,6 +105,7 @@ def main():
                             st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_" + original_filename + ".txt")
                 else:
                     processed_text = "No file uploaded."
+
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
         else:
@@ -207,15 +208,16 @@ def fernet_file_encrypt(file, key):
     file_hash = hashlib.sha256(encrypted_data).hexdigest()
     return encrypted_data, file_hash
 
-def fernet_file_decrypt(file, key, original_filename):
-    """Decrypts a file using Fernet symmetric encryption and saves it with the original filename."""
+def fernet_file_decrypt(file, key, original_filename, file_extension):
+    """Decrypts a file using Fernet symmetric encryption and saves it with the original filename and extension."""
     try:
         fernet = Fernet(key.encode())
         decrypted_data = fernet.decrypt(file.read())
-        return decrypted_data, original_filename
+        return decrypted_data, original_filename + file_extension
     except Exception as e:
         st.error(f"Decryption error: {str(e)}")
         return None, None
+
 
 if __name__ == "__main__":
     main()
