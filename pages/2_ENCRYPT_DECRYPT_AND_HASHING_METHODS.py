@@ -19,15 +19,15 @@ def homepage():
         """
         <div style='display: flex; justify-content: center;'>
             <div style='margin: 0 10px;'>
-                <img src='435792060_908559531280445_5041796525148081874_n.jpg' width='200' />
+                <img src='../435792060_908559531280445_5041796525148081874_n.jpg' width='200' />
                 <div style='text-align: center;'>Francis Arroyo</div>
             </div>
             <div style='margin: 0 10px;'>
-                <img src='80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg' width='200' />
+                <img src='../80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg' width='200' />
                 <div style='text-align: center;'>Ma Veronica Beltrano</div>
             </div>
             <div style='margin: 0 10px;'>
-                <img src='36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg' width='200' />
+                <img src='../36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg' width='200' />
                 <div style='text-align: center;'>Ma Antoinette Sisno</div>
             </div>
         </div>
