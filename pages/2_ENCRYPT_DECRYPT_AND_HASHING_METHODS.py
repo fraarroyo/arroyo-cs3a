@@ -13,7 +13,7 @@ def homepage():
     st.write("")
 
     # Create columns for the images
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns()
 
     # Place each image in a column
     with col1:
