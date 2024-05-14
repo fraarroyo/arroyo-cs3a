@@ -78,7 +78,8 @@ def main():
                 if if_decrypt:
                     processed_text = fernet_file_decrypt(file_uploaded, key)
                 else:
-                    processed_text = fernet_file_encrypt(file_uploaded, key)
+                    encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
+                    processed_text = f"Encrypted file hash: {file_hash}"
             else:
                 processed_text = "No file uploaded."
 
@@ -159,19 +160,34 @@ def sha1_hash(text):
     """Hashes the text using SHA-1."""
     return hashlib.sha1(text.encode()).hexdigest()
 
+def hash_file(file, algorithm):
+    """Computes the hash of a file using the specified algorithm."""
+    hash_function = hashlib.new(algorithm)
+    while True:
+        data = file.read(65536)  # Read in chunks to conserve memory
+        if not data:
+            break
+        hash_function.update(data)
+    return hash_function.hexdigest()
+
 def fernet_file_encrypt(file, key):
-    """Encrypts a file using Fernet symmetric encryption."""
+    """Encrypts a file using Fernet symmetric encryption and computes its hash."""
     if not key:
         key = Fernet.generate_key()
     fernet = Fernet(key)
     encrypted_data = fernet.encrypt(file.read())
-    return encrypted_data
+    
+    # Compute hash of the file's contents
+    file.seek(0)  # Reset file pointer to beginning
+    file_hash = hash_file(file, "sha256")
+    
+    return encrypted_data, file_hash
 
-def fernet_file_decrypt(encrypted_file, key):
+def fernet_file_decrypt(encrypted_data, key):
     """Decrypts a file using Fernet symmetric encryption."""
     fernet = Fernet(key)
-    decrypted_data = fernet.decrypt(encrypted_file.read())
-    return decrypted_data.decode()
+    decrypted_data = fernet.decrypt(encrypted_data)
+    return decrypted_data
 
 if __name__ == "__main__":
     main()
