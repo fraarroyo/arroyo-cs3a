@@ -63,43 +63,51 @@ def main():
         if_decrypt = st.checkbox("Decrypt")
 
     if st.button("Submit"):
-        if selected_crypto == "Caesar Cipher":
-            processed_text, _, _ = caesar_cipher(text, shift_key, if_decrypt)
-        elif selected_crypto == "Fernet Symmetric Encryption":
-            processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
-        elif selected_crypto == "RSA Asymmetric Encryption":
-            processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt)
-        elif selected_crypto == "SHA-1 Hashing":
-            if text_or_file == "Text":
-                processed_text = sha1_hash(text)
-            else:
-                processed_text = hash_file(file_uploaded, "sha1")
-        elif selected_crypto == "SHA-256 Hashing":
-            if text_or_file == "Text":
-                processed_text = hash_text(text, "sha256")
-            else:
-                processed_text = hash_file(file_uploaded, "sha256")
-        elif selected_crypto == "SHA-512 Hashing":
-            if text_or_file == "Text":
-                processed_text = hash_text(text, "sha512")
-            else:
-                processed_text = hash_file(file_uploaded, "sha512")
-        elif selected_crypto == "MD5 Hashing":
-            if text_or_file == "Text":
-                processed_text = hash_text(text, "md5")
-            else:
-                processed_text = hash_file(file_uploaded, "md5")
-        elif selected_crypto == "Symmetric File Encryption":
-            if file_uploaded is not None:
-                if if_decrypt:
-                    processed_text = fernet_file_decrypt(file_uploaded, key)
+        processed_text = ""
+        try:
+            if selected_crypto == "Caesar Cipher":
+                processed_text, _, _ = caesar_cipher(text, shift_key, if_decrypt)
+            elif selected_crypto == "Fernet Symmetric Encryption":
+                processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
+            elif selected_crypto == "RSA Asymmetric Encryption":
+                processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt)
+            elif selected_crypto == "SHA-1 Hashing":
+                if text_or_file == "Text":
+                    processed_text = sha1_hash(text)
                 else:
-                    encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
-                    processed_text = f"Encrypted file hash: {file_hash}"
-            else:
-                processed_text = "No file uploaded."
-
-        st.write("Processed Text:", processed_text)
+                    processed_text = hash_file(file_uploaded, "sha1")
+            elif selected_crypto == "SHA-256 Hashing":
+                if text_or_file == "Text":
+                    processed_text = hash_text(text, "sha256")
+                else:
+                    processed_text = hash_file(file_uploaded, "sha256")
+            elif selected_crypto == "SHA-512 Hashing":
+                if text_or_file == "Text":
+                    processed_text = hash_text(text, "sha512")
+                else:
+                    processed_text = hash_file(file_uploaded, "sha512")
+            elif selected_crypto == "MD5 Hashing":
+                if text_or_file == "Text":
+                    processed_text = hash_text(text, "md5")
+                else:
+                    processed_text = hash_file(file_uploaded, "md5")
+            elif selected_crypto == "Symmetric File Encryption":
+                if file_uploaded is not None:
+                    if if_decrypt:
+                        decrypted_data = fernet_file_decrypt(file_uploaded, key)
+                        if decrypted_data:
+                            st.download_button("Download Decrypted File", decrypted_data, file_name="decrypted_file")
+                    else:
+                        encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
+                        if encrypted_data:
+                            st.write(f"Encrypted file hash: {file_hash}")
+                            st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_file")
+                else:
+                    processed_text = "No file uploaded."
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
+        else:
+            st.write("Processed Text:", processed_text)
 
 def caesar_cipher(text, shift_key, if_decrypt):
     """Encrypts or decrypts text using the Caesar Cipher."""
@@ -121,8 +129,8 @@ def fernet_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using the Fernet symmetric encryption."""
     if not key:
         key = Fernet.generate_key()
-        st.write("Generated Fernet Secret Key:", key)
-    fernet = Fernet(key)
+        st.write("Generated Fernet Secret Key:", key.decode())
+    fernet = Fernet(key.encode())
     if if_decrypt:
         return fernet.decrypt(text.encode()).decode(), None, None
     else:
@@ -177,33 +185,37 @@ def sha1_hash(text):
     return hashlib.sha1(text.encode()).hexdigest()
 
 def hash_file(file, algorithm):
-    """Computes the hash of a file using the specified algorithm."""
-    hash_function = hashlib.new(algorithm)
-    while True:
-        data = file.read(65536)  # Read in chunks to conserve memory
-        if not data:
-            break
-        hash_function.update(data)
-    return hash_function.hexdigest()
+    """Hashes the file using the specified algorithm."""
+    hasher = hashlib.new(algorithm)
+    for chunk in iter(lambda: file.read(4096), b""):
+        hasher.update(chunk)
+    return hasher.hexdigest()
 
 def fernet_file_encrypt(file, key):
-    """Encrypts a file using Fernet symmetric encryption and computes its hash."""
+    """Encrypts a file using Fernet symmetric encryption."""
     if not key:
-        key = Fernet.generate_key()
-    fernet = Fernet(key)
+        key = Fernet.generate_key().decode()
+        st.write("Generated Fernet Secret Key:", key)
+    fernet = Fernet(key.encode())
     encrypted_data = fernet.encrypt(file.read())
-    
-    # Compute hash of the file's contents
-    file.seek(0)  # Reset file pointer to beginning
-    file_hash = hash_file(file, "sha256")
-    
+    file_hash = hashlib.sha256(encrypted_data).hexdigest()
     return encrypted_data, file_hash
 
-def fernet_file_decrypt(encrypted_data, key):
+def fernet_file_decrypt(file, key):
     """Decrypts a file using Fernet symmetric encryption."""
-    fernet = Fernet(key)
-    decrypted_data = fernet.decrypt(encrypted_data)
-    return decrypted_data
+    try:
+        fernet = Fernet(key.encode())
+        decrypted_data = fernet.decrypt(file.read())
+        return decrypted_data
+    except Exception as e:
+        st.error(f"Decryption error: {str(e)}")
+        return None
+
+def get_download_link(data, label="Download file"):
+    """Generates a link to download the given data."""
+    b64 = base64.b64encode(data).decode()
+    href = f'<a href="data:file/octet-stream;base64,{b64}" download="file">{label}</a>'
+    return href
 
 if __name__ == "__main__":
     main()
