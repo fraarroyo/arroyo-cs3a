@@ -7,15 +7,17 @@ import hashlib
 import base64
 import os
 
+import streamlit as st
+
 def homepage():
-    st.markdown("<div style='text-align: center;'><h2>Welcome to Cryptography Toolkit</h2>", unsafe_allow_html=True)
-    st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
+    st.markdown("<h2 style='text-align: center;'>Welcome to Cryptography Toolkit</h2>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center;'>This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.</h4>", unsafe_allow_html=True)
+    
     st.write("")
-    
-    # Create a row with three columns
+
+    # Create columns to hold the images and captions
     col1, col2, col3 = st.columns(3)
-    
-    # Place each image in a separate column
+
     with col1:
         st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
 
@@ -25,7 +27,7 @@ def homepage():
     with col3:
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
 
-    st.write("Please select a technique from the sidebar to get started.")
+    st.markdown("<h4 style='text-align: center;'>Please select a technique from the sidebar to get started.</h4>", unsafe_allow_html=True)
 
 def main():
     st.title("Applied Cryptography Application")
