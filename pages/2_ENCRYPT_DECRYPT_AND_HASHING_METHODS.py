@@ -14,23 +14,18 @@ def homepage():
     st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
     st.write("")
 
-    # Test st.columns functionality
-    try:
-        cols = st.columns(3)
-        cols[0].write("Column 1")
-        cols[1].write("Column 2")
-        cols[2].write("Column 3")
-    except Exception as e:
-        st.error(f"Column creation failed: {e}")
+    # Create columns for the images
+    col1, col2, col3 = st.columns(3)
 
-    # Test displaying an image
-    try:
+    # Place each image in a column
+    with col1:
         st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
+    with col2:
         st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption='Ma Veronica Beltrano')
+    with col3:
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
-    except Exception as e:
-        st.error(f"Image display failed: {e}")
 
+    st.write("Please select a technique from the sidebar to get started.")
 def main():
     st.title("Applied Cryptography Application")
 
