@@ -59,7 +59,6 @@ def main():
         
     if selected_crypto == "Symmetric File Encryption":
         file_uploaded = st.file_uploader("Upload a file")
-        key = st.text_input("Enter Encryption Key")
         if_decrypt = st.checkbox("Decrypt")
 
     if st.button("Submit"):
