@@ -15,8 +15,6 @@ def homepage():
     # Create a row with three columns
     col1, col2, col3 = st.columns(3)
     
-    st.columns = st.markdown("<div style='display: flex; justify-content: center;'>", unsafe_allow_html=True)
-
     # Place each image in a separate column
     with col1:
         st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
