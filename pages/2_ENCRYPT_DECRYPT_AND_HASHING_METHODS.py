@@ -25,10 +25,10 @@ def homepage():
     with col3:
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
 
-    st.write("Please select a technique from the sidebar to get started.")
+    st.write("<div style='text-align: center;'>Please select a technique from the sidebar to get started.")
 
 def main():
-    st.title("Applied Cryptography Application")
+    st.title("<div style='text-align: center;'>Applied Cryptography Application")
 
     # Description for each cryptographic algorithm
     descriptions = {
