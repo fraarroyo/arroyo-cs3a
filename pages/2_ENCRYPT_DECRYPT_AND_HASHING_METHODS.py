@@ -26,7 +26,6 @@ def homepage():
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
 
     st.write("Please select a technique from the sidebar to get started.")
-homepage()
 
 def main():
     st.title("Applied Cryptography Application")
