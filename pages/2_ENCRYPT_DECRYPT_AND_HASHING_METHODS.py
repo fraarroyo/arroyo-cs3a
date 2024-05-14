@@ -102,10 +102,9 @@ def main():
                         encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
                         if encrypted_data:
                             st.write(f"Encrypted file hash: {file_hash}")
-                            st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_" + original_filename)
+                            st.download_button("Download Encrypted File", encrypted_data, file_name="encrypted_" + original_filename + ".txt")
                 else:
                     processed_text = "No file uploaded."
-
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
         else:
