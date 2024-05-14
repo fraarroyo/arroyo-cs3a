@@ -11,7 +11,9 @@ def homepage():
     st.title("Welcome to Cryptography Toolkit")
     st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
     st.write("")
-    st.image('435792060_908559531280445_5041796525148081874_n.jpg', '80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption=['Francis Arroyo','Ma Veronica Beltrano','Ma Antoinette Sisno'])
+    st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
+    st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption='Ma Veronica Beltrano')
+    st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
     st.write("Please select a technique from the sidebar to get started.")
 
 def main():
