@@ -20,7 +20,7 @@ def homepage():
         st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
 
     with col2:
-        st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=200, caption='Ma Veronica Beltrano')
+        st.image('80ba58d9-8951-4f51-a6aa-6b0dd67acad5.jpg', width=300, caption='Ma Veronica Beltrano')
 
     with col3:
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
