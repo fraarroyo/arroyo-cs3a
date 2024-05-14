@@ -7,18 +7,68 @@ import hashlib
 import base64
 import os
 
-st.title("Applied Cryptography Application")
+def homepage():
+    st.title("Welcome to Cryptography Toolkit")
+    st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
+    st.write("Please select a technique from the sidebar to get started.")
 
-# Description for each cryptographic algorithm
-descriptions = {
-    "Caesar Cipher": "The Caesar Cipher is one of the simplest and most widely known encryption techniques. It is a substitution cipher where each letter in the plaintext is shifted a certain number of places down or up the alphabet.",
-    "Fernet Symmetric Encryption": "Fernet is a symmetric encryption algorithm that uses a shared secret key to encrypt and decrypt data. It provides strong encryption and is easy to use.",
-    "RSA Asymmetric Encryption": "RSA (Rivest-Shamir-Adleman) is an asymmetric encryption algorithm that uses a public-private key pair. It is widely used for secure communication and digital signatures.",
-    "SHA-1 Hashing": "SHA-1 is a cryptographic hash function that produces a 160-bit (20-byte) hash value. It is commonly used for data integrity verification.",
-    "SHA-256 Hashing": "SHA-256 is a cryptographic hash function that produces a 256-bit (32-byte) hash value. It is commonly used for data integrity verification.",
-    "SHA-512 Hashing": "SHA-512 is a cryptographic hash function that produces a 512-bit (64-byte) hash value. It provides stronger security than SHA-256.",
-    "MD5 Hashing": "MD5 is a widely used cryptographic hash function that produces a 128-bit (16-byte) hash value. It is commonly used for checksums and data integrity verification."
-}
+def main():
+    st.title("Applied Cryptography Application")
+
+    # Description for each cryptographic algorithm
+    descriptions = {
+        "Caesar Cipher": "The Caesar Cipher is one of the simplest and most widely known encryption techniques. It is a substitution cipher where each letter in the plaintext is shifted a certain number of places down or up the alphabet.",
+        "Fernet Symmetric Encryption": "Fernet is a symmetric encryption algorithm that uses a shared secret key to encrypt and decrypt data. It provides strong encryption and is easy to use.",
+        "RSA Asymmetric Encryption": "RSA (Rivest-Shamir-Adleman) is an asymmetric encryption algorithm that uses a public-private key pair. It is widely used for secure communication and digital signatures.",
+        "SHA-1 Hashing": "SHA-1 is a cryptographic hash function that produces a 160-bit (20-byte) hash value. It is commonly used for data integrity verification.",
+        "SHA-256 Hashing": "SHA-256 is a cryptographic hash function that produces a 256-bit (32-byte) hash value. It is commonly used for data integrity verification.",
+        "SHA-512 Hashing": "SHA-512 is a cryptographic hash function that produces a 512-bit (64-byte) hash value. It provides stronger security than SHA-256.",
+        "MD5 Hashing": "MD5 is a widely used cryptographic hash function that produces a 128-bit (16-byte) hash value. It is commonly used for checksums and data integrity verification."
+    }
+
+    # Streamlit UI setup
+    crypto_options = ["Homepage", "Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption", 
+                      "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]
+    selected_crypto = st.sidebar.selectbox("Select Cryptographic Technique", crypto_options)
+
+    if selected_crypto == "Homepage":
+        homepage()
+        return
+
+    if selected_crypto in descriptions:
+        st.sidebar.subheader(selected_crypto)
+        st.sidebar.write(descriptions[selected_crypto])
+
+    if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption"]:
+        text = st.text_area("Enter Text")
+        if selected_crypto == "Caesar Cipher":
+            shift_key = st.number_input("Shift Key (Caesar Cipher)", min_value=1, max_value=25, step=1, value=3)
+        if selected_crypto == "Fernet Symmetric Encryption":
+            key = st.text_input("Enter Encryption Key")
+        elif selected_crypto == "RSA Asymmetric Encryption":
+            key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
+        if_decrypt = st.checkbox("Decrypt")
+
+    if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
+        text = st.text_area("Enter Text")
+
+    if st.button("Submit"):
+        if selected_crypto == "Caesar Cipher":
+            processed_text, _, _ = caesar_cipher(text, shift_key, if_decrypt)
+        elif selected_crypto == "Fernet Symmetric Encryption":
+            processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
+        elif selected_crypto == "RSA Asymmetric Encryption":
+            processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt)
+        elif selected_crypto == "SHA-1 Hashing":
+            processed_text = sha1_hash(text)
+        elif selected_crypto == "SHA-256 Hashing":
+            processed_text = hash_text(text, "sha256")
+        elif selected_crypto == "SHA-512 Hashing":
+            processed_text = hash_text(text, "sha512")
+        elif selected_crypto == "MD5 Hashing":
+            processed_text = hash_text(text, "md5")
+
+        st.write("Processed Text:", processed_text)
 
 # Caesar Cipher
 def caesar_cipher(text, shift_key, if_decrypt):
@@ -100,42 +150,5 @@ def sha1_hash(text):
     """Hashes the text using SHA-1."""
     return hashlib.sha1(text.encode()).hexdigest()
 
-# Streamlit UI setup
-crypto_options = ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption", 
-                  "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]
-selected_crypto = st.sidebar.selectbox("Select Cryptographic Technique", crypto_options)
-
-if selected_crypto in descriptions:
-    st.sidebar.subheader(selected_crypto)
-    st.sidebar.write(descriptions[selected_crypto])
-
-if selected_crypto in ["Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption"]:
-    text = st.text_area("Enter Text")
-    if selected_crypto == "Caesar Cipher":
-        shift_key = st.number_input("Shift Key (Caesar Cipher)", min_value=1, max_value=25, step=1, value=3)
-    if selected_crypto == "Fernet Symmetric Encryption":
-        key = st.text_input("Enter Encryption Key")
-    elif selected_crypto == "RSA Asymmetric Encryption":
-        key = st.text_area("Enter Public Key (Encryption) / Private Key (Decryption)")
-    if_decrypt = st.checkbox("Decrypt")
-
-if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
-    text = st.text_area("Enter Text")
-
-if st.button("Submit"):
-    if selected_crypto == "Caesar Cipher":
-        processed_text, _, _ = caesar_cipher(text, shift_key, if_decrypt)
-    elif selected_crypto == "Fernet Symmetric Encryption":
-        processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
-    elif selected_crypto == "RSA Asymmetric Encryption":
-        processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt)
-    elif selected_crypto == "SHA-1 Hashing":
-        processed_text = sha1_hash(text)
-    elif selected_crypto == "SHA-256 Hashing":
-        processed_text = hash_text(text, "sha256")
-    elif selected_crypto == "SHA-512 Hashing":
-        processed_text = hash_text(text, "sha512")
-    elif selected_crypto == "MD5 Hashing":
-        processed_text = hash_text(text, "md5")
-
-    st.write("Processed Text:", processed_text)
+if __name__ == "__main__":
+    main()
