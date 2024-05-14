@@ -10,6 +10,8 @@ import os
 def homepage():
     st.title("Welcome to Cryptography Toolkit")
     st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
+    st.write("")
+    st.image('sunrise.jpg', caption='Sunrise by the mountains')
     st.write("Please select a technique from the sidebar to get started.")
 
 def main():
