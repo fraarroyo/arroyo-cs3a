@@ -15,10 +15,10 @@ def homepage():
     # Define the width of each image column
     col_width = 200
 
-    # Create columns for the images
-    if st._is_running_with_streamlit:
+    # Try using beta_columns, fallback to columns
+    try:
         col1, col2, col3 = st.beta_columns(3)
-    else:
+    except AttributeError:
         col1, col2, col3 = st.columns(3)
 
     # Place each image in a column
@@ -30,6 +30,7 @@ def homepage():
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=col_width, caption='Ma Antoinette Sisno')
 
     st.write("Please select a technique from the sidebar to get started.")
+
 
 # Call the function to display the homepage
 homepage()
