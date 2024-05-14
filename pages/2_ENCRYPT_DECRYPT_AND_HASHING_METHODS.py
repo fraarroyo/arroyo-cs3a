@@ -9,7 +9,7 @@ import os
 
 
 def homepage():
-    st.title("Welcome to Cryptography Toolkit")
+    st.markdown("<h2>Welcome to Cryptography Toolkit</h2>",  unsafe_allow_html=True)
     st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
     st.write("")
     
