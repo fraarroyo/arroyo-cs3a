@@ -23,12 +23,13 @@ def main():
         "SHA-1 Hashing": "SHA-1 is a cryptographic hash function that produces a 160-bit (20-byte) hash value. It is commonly used for data integrity verification.",
         "SHA-256 Hashing": "SHA-256 is a cryptographic hash function that produces a 256-bit (32-byte) hash value. It is commonly used for data integrity verification.",
         "SHA-512 Hashing": "SHA-512 is a cryptographic hash function that produces a 512-bit (64-byte) hash value. It provides stronger security than SHA-256.",
-        "MD5 Hashing": "MD5 is a widely used cryptographic hash function that produces a 128-bit (16-byte) hash value. It is commonly used for checksums and data integrity verification."
+        "MD5 Hashing": "MD5 is a widely used cryptographic hash function that produces a 128-bit (16-byte) hash value. It is commonly used for checksums and data integrity verification.",
+        "File Encryption": "Symmetric encryption technique to encrypt and decrypt files using Fernet."
     }
 
     # Streamlit UI setup
     crypto_options = ["Homepage", "Caesar Cipher", "Fernet Symmetric Encryption", "RSA Asymmetric Encryption", 
-                      "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]
+                      "SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing", "File Encryption"]
     selected_crypto = st.sidebar.selectbox("Select Cryptographic Technique", crypto_options)
 
     if selected_crypto == "Homepage":
@@ -52,6 +53,11 @@ def main():
     if selected_crypto in ["SHA-1 Hashing", "SHA-256 Hashing", "SHA-512 Hashing", "MD5 Hashing"]:
         text = st.text_area("Enter Text")
 
+    if selected_crypto == "File Encryption":
+        file_uploaded = st.file_uploader("Upload a file")
+        key = st.text_input("Enter Encryption Key")
+        if_decrypt = st.checkbox("Decrypt")
+
     if st.button("Submit"):
         if selected_crypto == "Caesar Cipher":
             processed_text, _, _ = caesar_cipher(text, shift_key, if_decrypt)
@@ -67,10 +73,17 @@ def main():
             processed_text = hash_text(text, "sha512")
         elif selected_crypto == "MD5 Hashing":
             processed_text = hash_text(text, "md5")
+        elif selected_crypto == "File Encryption":
+            if file_uploaded is not None:
+                if if_decrypt:
+                    processed_text = fernet_file_decrypt(file_uploaded, key)
+                else:
+                    processed_text = fernet_file_encrypt(file_uploaded, key)
+            else:
+                processed_text = "No file uploaded."
 
         st.write("Processed Text:", processed_text)
 
-# Caesar Cipher
 def caesar_cipher(text, shift_key, if_decrypt):
     """Encrypts or decrypts text using the Caesar Cipher."""
     result = ""
@@ -87,7 +100,6 @@ def caesar_cipher(text, shift_key, if_decrypt):
             result += char
     return result, None, None  # Caesar Cipher doesn't generate keys
 
-# Fernet Symmetric Encryption
 def fernet_encrypt_decrypt(text, key, if_decrypt):
     """Encrypts or decrypts text using the Fernet symmetric encryption."""
     if not key:
@@ -139,16 +151,27 @@ def rsa_encrypt_decrypt(text, key, if_decrypt):
         encrypted_text = public_key.encrypt(text.encode(), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
         return base64.b64encode(encrypted_text).decode(), None, key
 
-
-# Hashing Functions
 def hash_text(text, algorithm):
     """Hashes the text using the specified algorithm."""
     return hashlib.new(algorithm, text.encode()).hexdigest()
 
-# SHA-1 Hashing
 def sha1_hash(text):
     """Hashes the text using SHA-1."""
     return hashlib.sha1(text.encode()).hexdigest()
+
+def fernet_file_encrypt(file, key):
+    """Encrypts a file using Fernet symmetric encryption."""
+    if not key:
+        key = Fernet.generate_key()
+    fernet = Fernet(key)
+    encrypted_data = fernet.encrypt(file.read())
+    return encrypted_data
+
+def fernet_file_decrypt(encrypted_file, key):
+    """Decrypts a file using Fernet symmetric encryption."""
+    fernet = Fernet(key)
+    decrypted_data = fernet.decrypt(encrypted_file.read())
+    return decrypted_data.decode()
 
 if __name__ == "__main__":
     main()
