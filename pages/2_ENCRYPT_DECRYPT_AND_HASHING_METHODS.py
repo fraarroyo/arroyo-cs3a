@@ -67,15 +67,6 @@ def main():
             processed_text, _, _ = caesar_cipher(text, shift_key, if_decrypt)
         elif selected_crypto == "Fernet Symmetric Encryption":
             processed_text, _, _ = fernet_encrypt_decrypt(text, key, if_decrypt)
-        elif selected_crypto == "File Encryption Symmetric Encryption":
-            if file_uploaded is not None:
-                if if_decrypt:
-                    processed_text = fernet_file_decrypt(file_uploaded, key)
-                else:
-                    encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
-                    processed_text = f"Encrypted file hash: {file_hash}"
-            else:
-                processed_text = "No file uploaded."
         elif selected_crypto == "RSA Asymmetric Encryption":
             processed_text, _, _ = rsa_encrypt_decrypt(text, key, if_decrypt)
         elif selected_crypto == "SHA-1 Hashing":
@@ -98,6 +89,15 @@ def main():
                 processed_text = hash_text(text, "md5")
             else:
                 processed_text = hash_file(file_uploaded, "md5")
+        elif selected_crypto == "File Encryption Symmetric Encryption":
+            if file_uploaded is not None:
+                if if_decrypt:
+                    processed_text = fernet_file_decrypt(file_uploaded, key)
+                else:
+                    encrypted_data, file_hash = fernet_file_encrypt(file_uploaded, key)
+                    processed_text = f"Encrypted file hash: {file_hash}"
+            else:
+                processed_text = "No file uploaded."
 
         st.write("Processed Text:", processed_text)
 
