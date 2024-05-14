@@ -18,7 +18,7 @@ def homepage():
     st.write("")
     
     # Center-align the images using columns
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2, col3 = st.columns(3)
     
     with col1:
         st.image('435792060_908559531280445_5041796525148081874_n.jpg', width=200, caption='Francis Arroyo')
