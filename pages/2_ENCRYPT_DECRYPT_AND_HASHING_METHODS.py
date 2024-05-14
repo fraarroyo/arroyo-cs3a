@@ -7,8 +7,6 @@ import hashlib
 import base64
 import os
 
-
-
 def homepage():
     st.title("Welcome to Cryptography Toolkit")
     st.write("This toolkit provides various cryptographic techniques for encryption, decryption, and hashing.")
@@ -26,6 +24,10 @@ def homepage():
         st.image('36962e81-2167-4f1f-8aac-39ffc2d272e1.jpg', width=200, caption='Ma Antoinette Sisno')
 
     st.write("Please select a technique from the sidebar to get started.")
+
+# Call the function to display the homepage
+homepage()
+
 def main():
     st.title("Applied Cryptography Application")
 
