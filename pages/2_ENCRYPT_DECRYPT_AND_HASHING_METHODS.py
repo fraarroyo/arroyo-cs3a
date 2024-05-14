@@ -206,15 +206,15 @@ def fernet_file_encrypt(file, key):
     file_hash = hashlib.sha256(encrypted_data).hexdigest()
     return encrypted_data, file_hash
 
-def fernet_file_decrypt(file, key):
-    """Decrypts a file using Fernet symmetric encryption."""
+def fernet_file_decrypt(file, key, original_filename):
+    """Decrypts a file using Fernet symmetric encryption and saves it with the original filename."""
     try:
         fernet = Fernet(key.encode())
         decrypted_data = fernet.decrypt(file.read())
-        return decrypted_data
+        return decrypted_data, original_filename
     except Exception as e:
         st.error(f"Decryption error: {str(e)}")
-        return None
+        return None, None
 
 if __name__ == "__main__":
     main()
